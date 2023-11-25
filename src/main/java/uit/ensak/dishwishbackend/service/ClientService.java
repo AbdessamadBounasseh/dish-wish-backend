@@ -18,4 +18,8 @@ public class ClientService implements IClientSevice {
         return clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException("Client by Id "+ id +" could not be found."));
     }
 
+    public void saveClient(Client client) {
+        clientRepository.save(client);
+    }
+
 }

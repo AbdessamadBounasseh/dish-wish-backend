@@ -22,4 +22,10 @@ public class ClientController {
         Client client = clientService.getClientById(clientId);
         return new ResponseEntity<>(client, HttpStatus.OK);
     }
+
+    @PostMapping("/add")
+    public ResponseEntity<String> createClient(@RequestBody Client client) {
+        clientService.saveClient(client);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Client saved successfully");
+    }
 }
