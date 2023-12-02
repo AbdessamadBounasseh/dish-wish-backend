@@ -10,6 +10,8 @@ import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -25,6 +27,7 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String email;
 
     private String password;
@@ -60,4 +63,7 @@ public class Client {
 
     @ManyToMany(mappedBy = "clients", cascade = CascadeType.ALL)
     private List<Allergy> allergies;
+
+    @ManyToMany
+    private Collection<Role> roles = new ArrayList<>();
 }
