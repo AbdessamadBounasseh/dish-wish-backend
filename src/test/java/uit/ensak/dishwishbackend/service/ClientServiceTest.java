@@ -1,7 +1,6 @@
 package uit.ensak.dishwishbackend.service;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -10,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
+import uit.ensak.dishwishbackend.repository.RoleRepository;
 
 import java.util.Optional;
 
@@ -22,11 +22,14 @@ class ClientServiceTest {
     @Mock
     private ClientRepository clientRepository;
 
+    @Mock
+    private RoleRepository roleRepository;
+
     private ClientService clientService;
 
     @BeforeEach
     void setUp() {
-        clientService = new ClientService(clientRepository);
+        clientService = new ClientService(clientRepository, roleRepository);
     }
 
     @Test
