@@ -17,6 +17,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="ROLE")
+@DiscriminatorValue("CLIENT")
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,7 @@
 package uit.ensak.dishwishbackend.model;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@DiscriminatorValue("CHEF")
 public class Chef extends Client {
 
     private String bio;
