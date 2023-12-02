@@ -7,6 +7,7 @@ import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 class ClientRepositoryTest {
@@ -24,10 +25,23 @@ class ClientRepositoryTest {
         clientRepository.save(client);
 
         // when
-        Client expected = clientRepository.findById(clientId)
+        Client retrieveClient = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ClientNotFoundException("Not Found !"));
 
         // then
-        assertThat(expected.getId()).isEqualTo(client.getId());
+        assertThat(retrieveClient.getId()).isEqualTo(client.getId());
+    }
+
+    @Test
+    void clientByIdNotFound() {
+
+        // given
+        Long clientId = 1L;
+
+        // when & then
+        assertThrows(ClientNotFoundException.class, () -> {
+            clientRepository.findById(clientId)
+                    .orElseThrow(() -> new ClientNotFoundException("Not Found !"));
+        });
     }
 }
