@@ -37,27 +37,6 @@ public class ClientService implements IClientSevice {
     }
 
     @Override
-    public Role saveRole(Role role) {
-        log.info("Saving new role {}", role);
-        return roleRepository.save(role);
-    }
-
-    @Override
-    public void addRoleToUser(String email, String roleName) throws ClientNotFoundException, RoleNotFoundException {
-        log.info("Adding role {} to user by email {}", roleName, email);
-        Client client = clientRepository.findClientByEmail(email);
-        if (client == null){
-            throw new ClientNotFoundException("Client by email " + email + " could not be found.");
-        }
-
-        Role role = roleRepository.findRoleByName(roleName);
-        if (role == null){
-            throw new RoleNotFoundException("Role by name " + roleName + " could not be found.");
-        }
-        client.getRoles().add(role);
-    }
-
-    @Override
     public Client getClientByEmail(String email) {
         log.info("Fetching client by email {}", email);
         return clientRepository.findClientByEmail(email);

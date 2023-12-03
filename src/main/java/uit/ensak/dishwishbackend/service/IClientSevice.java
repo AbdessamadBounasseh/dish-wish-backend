@@ -13,10 +13,6 @@ public interface IClientSevice {
 
     Client saveClient(Client client);
 
-    Role saveRole(Role role);
-
-    void addRoleToUser(String email, String roleName) throws ClientNotFoundException, RoleNotFoundException;
-
     Client getClientByEmail(String email);
 
     List<Client> getAllClients();

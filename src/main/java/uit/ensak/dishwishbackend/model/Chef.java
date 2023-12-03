@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@DiscriminatorValue("CHEF")
+//@DiscriminatorValue("CHEF")
 public class Chef extends Client {
 
     private String bio;
