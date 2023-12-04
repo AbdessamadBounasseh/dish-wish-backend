@@ -10,6 +10,8 @@ import uit.ensak.dishwishbackend.model.Role;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.RoleRepository;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @Slf4j
@@ -32,15 +34,16 @@ public class RoleService implements IRoleSevice {
     @Override
     public void addRoleToUser(String email, String roleName) throws ClientNotFoundException, RoleNotFoundException {
         log.info("Adding role {} to user by email {}", roleName, email);
-        Client client = clientRepository.findClientByEmail(email);
-        if (client == null){
+
+        Optional<Client> optionalClient = clientRepository.findClientByEmail(email);
+        if (optionalClient.isEmpty()){
             throw new ClientNotFoundException("Client by email " + email + " could not be found.");
         }
+        Client client = optionalClient.get();
 
-        Role role = roleRepository.findRoleByName(roleName);
-        if (role == null){
-            throw new RoleNotFoundException("Role by name " + roleName + " could not be found.");
-        }
+        Role role = roleRepository.findRoleByName(roleName)
+                .orElseThrow(() -> new RoleNotFoundException("Role by name " + roleName + " could not be found."));
+
         client.getRoles().add(role);
     }
 

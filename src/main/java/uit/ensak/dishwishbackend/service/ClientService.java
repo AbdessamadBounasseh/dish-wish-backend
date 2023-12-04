@@ -4,13 +4,12 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
-import uit.ensak.dishwishbackend.exception.RoleNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
-import uit.ensak.dishwishbackend.model.Role;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.RoleRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -37,7 +36,7 @@ public class ClientService implements IClientSevice {
     }
 
     @Override
-    public Client getClientByEmail(String email) {
+    public Optional<Client> getClientByEmail(String email) {
         log.info("Fetching client by email {}", email);
         return clientRepository.findClientByEmail(email);
     }
