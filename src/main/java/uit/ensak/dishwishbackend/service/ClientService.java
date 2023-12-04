@@ -6,10 +6,8 @@ import org.springframework.stereotype.Service;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
-import uit.ensak.dishwishbackend.repository.RoleRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -17,11 +15,9 @@ import java.util.Optional;
 public class ClientService implements IClientSevice {
 
     private final ClientRepository clientRepository;
-    private final RoleRepository roleRepository;
 
-    public ClientService(ClientRepository clientRepository, RoleRepository roleRepository) {
+    public ClientService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
-        this.roleRepository = roleRepository;
     }
 
     public Client getClientById(Long id) throws ClientNotFoundException {
@@ -36,9 +32,9 @@ public class ClientService implements IClientSevice {
     }
 
     @Override
-    public Optional<Client> getClientByEmail(String email) {
+    public Client getClientByEmail(String email) {
         log.info("Fetching client by email {}", email);
-        return clientRepository.findClientByEmail(email);
+        return clientRepository.findClientByEmail(email).orElseThrow();
     }
 
     @Override

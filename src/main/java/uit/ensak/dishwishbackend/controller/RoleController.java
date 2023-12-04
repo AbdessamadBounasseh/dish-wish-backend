@@ -21,11 +21,11 @@ public class RoleController {
         this.roleService = roleService;
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<Role> saveRole(@RequestBody Role role) {
-        roleService.saveRole(role);
-        return ResponseEntity.status(HttpStatus.CREATED).body(role);
-    }
+//    @PostMapping("/save")
+//    public ResponseEntity<Role> saveRole(@RequestBody Role role) {
+//        roleService.saveRole(role);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(role);
+//    }
 
     @PostMapping("/add-to-user")
     public ResponseEntity<?> addRoleToUser(@RequestBody RoleUserForm form) throws ClientNotFoundException, RoleNotFoundException {

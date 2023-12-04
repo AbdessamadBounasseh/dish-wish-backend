@@ -1,10 +1,7 @@
 package uit.ensak.dishwishbackend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -23,6 +20,7 @@ import java.util.stream.Collectors;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 //@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 //@DiscriminatorColumn(name="ROLE")
 //@DiscriminatorValue("CLIENT")
@@ -68,14 +66,16 @@ public class Client implements UserDetails {
     @ManyToMany(mappedBy = "clients", cascade = CascadeType.ALL)
     private List<Allergy> allergies;
 
-    @ManyToMany
+    @ElementCollection(targetClass = Role.class)
+    @CollectionTable(name = "client_roles", joinColumns = @JoinColumn(name = "client_id"))
+    @Enumerated(EnumType.STRING)
     private Collection<Role> roles = new ArrayList<>();
 
     // From UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .map(role -> new SimpleGrantedAuthority(role.name()))
                 .collect(Collectors.toList());
     }
 

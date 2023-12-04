@@ -12,7 +12,7 @@ public interface IClientSevice {
 
     Client saveClient(Client client);
 
-    Optional<Client> getClientByEmail(String email);
+    Client getClientByEmail(String email);
 
     List<Client> getAllClients();
 }

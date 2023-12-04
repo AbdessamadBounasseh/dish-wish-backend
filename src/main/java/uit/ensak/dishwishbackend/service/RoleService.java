@@ -4,11 +4,9 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
-import uit.ensak.dishwishbackend.exception.RoleNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.model.Role;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
-import uit.ensak.dishwishbackend.repository.RoleRepository;
 
 import java.util.Optional;
 
@@ -17,22 +15,20 @@ import java.util.Optional;
 @Slf4j
 public class RoleService implements IRoleSevice {
 
-    private final RoleRepository roleRepository;
     private final ClientRepository clientRepository;
 
-    public RoleService(RoleRepository roleRepository, ClientRepository clientRepository) {
-        this.roleRepository = roleRepository;
+    public RoleService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 
-    @Override
-    public Role saveRole(Role role) {
-        log.info("Saving new role {}", role);
-        return roleRepository.save(role);
-    }
+//    @Override
+//    public Role saveRole(Role role) {
+//        log.info("Saving new role {}", role);
+//        return roleRepository.save(role);
+//    }
 
     @Override
-    public void addRoleToUser(String email, String roleName) throws ClientNotFoundException, RoleNotFoundException {
+    public void addRoleToUser(String email, String roleName) throws ClientNotFoundException {
         log.info("Adding role {} to user by email {}", roleName, email);
 
         Optional<Client> optionalClient = clientRepository.findClientByEmail(email);
@@ -41,8 +37,7 @@ public class RoleService implements IRoleSevice {
         }
         Client client = optionalClient.get();
 
-        Role role = roleRepository.findRoleByName(roleName)
-                .orElseThrow(() -> new RoleNotFoundException("Role by name " + roleName + " could not be found."));
+        Role role = Role.valueOf(roleName);
 
         client.getRoles().add(role);
     }

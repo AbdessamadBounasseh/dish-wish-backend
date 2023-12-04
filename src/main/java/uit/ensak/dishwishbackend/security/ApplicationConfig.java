@@ -23,15 +23,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> {
-            try {
-                return clientService.getClientByEmail(username)
-                        .orElseThrow(() -> new ClientNotFoundException("Client by email " + username + " could not be found."));
-            } catch (ClientNotFoundException e) {
-                e.printStackTrace();
-            }
-            return null;
-        };
+        return clientService::getClientByEmail;
     }
 
     @Bean
