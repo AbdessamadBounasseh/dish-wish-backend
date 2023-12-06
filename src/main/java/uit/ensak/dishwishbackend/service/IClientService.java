@@ -4,9 +4,8 @@ import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface IClientSevice {
+public interface IClientService {
 
     Client getClientById(long id) throws ClientNotFoundException;
 

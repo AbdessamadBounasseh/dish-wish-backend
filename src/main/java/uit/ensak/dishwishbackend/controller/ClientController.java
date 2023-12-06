@@ -39,11 +39,11 @@ public class ClientController {
     }
 
     @PutMapping(value = "/update/{clientId}", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> updateClient(@PathVariable long clientId , @RequestPart("client") ClientDTO clientDTO,
-                                               @RequestPart("photo")MultipartFile photo) throws IOException {
+    public ResponseEntity<String> updateClient(@PathVariable long clientId, @RequestPart("client") ClientDTO clientDTO,
+                                               @RequestPart("photo") MultipartFile photo) throws IOException {
 
 
-            this.clientService.updateClient(clientId,clientMapper.fromClientDTO(clientDTO),photo);
+        this.clientService.updateClient(clientId, clientMapper.fromClientDTO(clientDTO), photo);
 
         return ResponseEntity.status(HttpStatus.OK).body("Client updated successfully");
     }

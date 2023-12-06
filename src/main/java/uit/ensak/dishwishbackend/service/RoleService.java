@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @Slf4j
-public class RoleService implements IRoleSevice {
+public class RoleService implements IRoleService {
 
     private final ClientRepository clientRepository;
 
