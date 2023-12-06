@@ -8,7 +8,6 @@ import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 
-
 import java.util.List;
 
 import java.io.File;
@@ -19,7 +18,7 @@ import java.nio.file.Paths;
 @Service
 @Transactional
 @Slf4j
-public class ClientService implements IClientSevice {
+public class ClientService implements IClientService {
 
     private final ClientRepository clientRepository;
 
@@ -27,7 +26,7 @@ public class ClientService implements IClientSevice {
         this.clientRepository = clientRepository;
     }
 
-    public Client getClientById(Long id) throws ClientNotFoundException {
+    public Client getClientById(long id) throws ClientNotFoundException {
         log.info("Fetching user by id {}", id);
         return clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client by Id " + id + " could not be found."));
