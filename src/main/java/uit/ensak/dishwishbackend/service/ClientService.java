@@ -1,16 +1,24 @@
 package uit.ensak.dishwishbackend.service;
 
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 
+
+import java.util.List;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
 @Service
+@Transactional
+@Slf4j
 public class ClientService implements IClientSevice {
 
     private final ClientRepository clientRepository;
@@ -19,13 +27,27 @@ public class ClientService implements IClientSevice {
         this.clientRepository = clientRepository;
     }
 
-    public Client getClientById(long id) throws ClientNotFoundException {
+    public Client getClientById(Long id) throws ClientNotFoundException {
+        log.info("Fetching user by id {}", id);
         return clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException("Client by Id "+ id +" could not be found."));
+                .orElseThrow(() -> new ClientNotFoundException("Client by Id " + id + " could not be found."));
     }
 
-    public void saveClient(Client client) {
-        clientRepository.save(client);
+    public Client saveClient(Client client) {
+        log.info("Saving new client {}", client);
+        return clientRepository.save(client);
+    }
+
+    @Override
+    public Client getClientByEmail(String email) {
+        log.info("Fetching client by email {}", email);
+        return clientRepository.findClientByEmail(email).orElseThrow();
+    }
+
+    @Override
+    public List<Client> getAllClients() {
+        log.info("Fetching all clients");
+        return clientRepository.findAll();
     }
 
     public void updateClient(long clientId, Client updateClient, MultipartFile photo) throws IOException {

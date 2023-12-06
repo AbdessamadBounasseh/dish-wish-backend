@@ -26,7 +26,7 @@ class ClientRepositoryTest {
 
         // when
         Client retrieveClient = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ClientNotFoundException("Not Found !"));
+                .orElseThrow(() -> new ClientNotFoundException("Client by Id " + clientId + " could not be found."));
 
         // then
         assertThat(retrieveClient.getId()).isEqualTo(client.getId());
@@ -41,7 +41,7 @@ class ClientRepositoryTest {
         // when & then
         assertThrows(ClientNotFoundException.class, () -> {
             clientRepository.findById(clientId)
-                    .orElseThrow(() -> new ClientNotFoundException("Not Found !"));
+                    .orElseThrow(() -> new ClientNotFoundException("Client by Id " + clientId + " could not be found."));
         });
     }
 }
