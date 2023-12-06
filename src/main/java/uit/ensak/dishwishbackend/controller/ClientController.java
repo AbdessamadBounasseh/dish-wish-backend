@@ -41,10 +41,13 @@ public class ClientController {
     @PutMapping(value = "/update/{clientId}", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateClient(@PathVariable long clientId, @RequestPart("client") ClientDTO clientDTO,
                                                @RequestPart("photo") MultipartFile photo) throws IOException {
-
-
         this.clientService.updateClient(clientId, clientMapper.fromClientDTO(clientDTO), photo);
-
         return ResponseEntity.status(HttpStatus.OK).body("Client updated successfully");
+    }
+
+    @DeleteMapping(value = "/delete/{clientId}")
+    public ResponseEntity<String> deleteClientAccount(@PathVariable long clientId) {
+        this.clientService.deleteClientAccount(clientId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Client deleted successfully");
     }
 }
