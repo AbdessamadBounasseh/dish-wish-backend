@@ -50,29 +50,34 @@ public class ClientService implements IClientService {
     }
 
     public void updateClient(long clientId, Client updateClient, MultipartFile photo) throws IOException {
-            updateClient.setId(clientId);
+        log.info("Updating user of id {} ", clientId);
+        updateClient.setId(clientId);
         String basePath = "src/main/resources/images/profilePhotos/";
         updateClient.setPhoto(this.saveFile(clientId, photo, basePath));
-            clientRepository.save(updateClient);
+        clientRepository.save(updateClient);
 
     }
 
-    private String saveFile(long id, MultipartFile file,String basePath) throws IOException {
+    private String saveFile(long id, MultipartFile file, String basePath) throws IOException {
         String originalFileName = file.getOriginalFilename();
-        if (originalFileName == "default-profile-pic-dishwish" ) {
+        log.info("Saving user of id {} ", +id + " file : ", originalFileName);
+        if (originalFileName == "default-profile-pic-dishwish") {
             return basePath + "default-profile-pic-dishwish";
-        }else {
-
+        } else {
             File existingFile = new File(basePath + originalFileName);
             if (existingFile.exists()) {
                 return basePath + originalFileName;
-            }
-            else {
+            } else {
                 String filename = String.valueOf(id) + "_" + originalFileName;
                 String filePath = "src/main/resources/images/profilePhotos/" + filename;
                 Files.write(Paths.get(filePath), file.getBytes());
                 return filePath;
             }
         }
+    }
+
+    public void deleteClientAccount(long clientId) {
+        log.info("Deleting user of id {} ", clientId);
+        this.clientRepository.deleteById(clientId);
     }
 }

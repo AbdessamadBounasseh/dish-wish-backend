@@ -16,17 +16,25 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @RequestMapping("/chefs")
 public class ChefController {
     private final ChefService chefService;
+
     private final ChefMapper chefMapper;
+
     public ChefController(ChefService chefService, ChefMapper chefMapper) {
         this.chefService = chefService;
         this.chefMapper = chefMapper;
     }
-    @PutMapping(value = "/update/{chefId}", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> updateClient(@PathVariable long chefId , @RequestPart("chef") ChefDTO chefDTO,
-                                               @RequestPart("photo") MultipartFile photo) throws IOException {
-        this.chefService.updateChef(chefId,chefMapper.fromChefDTO(chefDTO),photo);
 
+    @PutMapping(value = "/update/{chefId}", consumes = MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateClient(@PathVariable long chefId, @RequestPart("chef") ChefDTO chefDTO,
+                                               @RequestPart("photo") MultipartFile photo) throws IOException {
+        this.chefService.updateChef(chefId, chefMapper.fromChefDTO(chefDTO), photo);
         return ResponseEntity.status(HttpStatus.OK).body("Cook updated successfully");
+    }
+
+    @DeleteMapping(value = "/delete/{chefId}")
+    public ResponseEntity<String> deleteClientAccount(@PathVariable long chefId) {
+        this.chefService.deleteChefAccount(chefId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Cook deleted successfully");
     }
 
 }
