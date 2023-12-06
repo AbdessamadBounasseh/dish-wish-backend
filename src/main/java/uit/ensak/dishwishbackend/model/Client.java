@@ -1,10 +1,8 @@
 package uit.ensak.dishwishbackend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -37,6 +35,7 @@ public class Client {
 
     private String phoneNumber;
 
+    @ColumnDefault("'src/main/resources/images/profilePhotos/default-profile-pic-dishwish.png'")
     private String photo;
 
     @CreationTimestamp(source = SourceType.DB)
