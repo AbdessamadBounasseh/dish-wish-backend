@@ -5,7 +5,7 @@ import uit.ensak.dishwishbackend.model.Client;
 
 public interface IClientSevice {
 
-    Client getClientById(Long id) throws ClientNotFoundException;
+    Client getClientById(long id) throws ClientNotFoundException;
 
     void saveClient(Client client);
 
