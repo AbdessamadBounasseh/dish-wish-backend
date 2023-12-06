@@ -3,11 +3,18 @@ package uit.ensak.dishwishbackend.service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 
+
 import java.util.List;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 @Transactional
@@ -43,4 +50,30 @@ public class ClientService implements IClientSevice {
         return clientRepository.findAll();
     }
 
+    public void updateClient(long clientId, Client updateClient, MultipartFile photo) throws IOException {
+            updateClient.setId(clientId);
+        String basePath = "src/main/resources/images/profilePhotos/";
+        updateClient.setPhoto(this.saveFile(clientId, photo, basePath));
+            clientRepository.save(updateClient);
+
+    }
+
+    private String saveFile(long id, MultipartFile file,String basePath) throws IOException {
+        String originalFileName = file.getOriginalFilename();
+        if (originalFileName == "default-profile-pic-dishwish" ) {
+            return basePath + "default-profile-pic-dishwish";
+        }else {
+
+            File existingFile = new File(basePath + originalFileName);
+            if (existingFile.exists()) {
+                return basePath + originalFileName;
+            }
+            else {
+                String filename = String.valueOf(id) + "_" + originalFileName;
+                String filePath = "src/main/resources/images/profilePhotos/" + filename;
+                Files.write(Paths.get(filePath), file.getBytes());
+                return filePath;
+            }
+        }
+    }
 }

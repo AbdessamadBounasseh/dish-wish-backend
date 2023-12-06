@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface IClientSevice {
 
-    Client getClientById(Long id) throws ClientNotFoundException;
+    Client getClientById(long id) throws ClientNotFoundException;
 
     Client saveClient(Client client);
 
