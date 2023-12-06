@@ -21,12 +21,6 @@ public class RoleService implements IRoleSevice {
         this.clientRepository = clientRepository;
     }
 
-//    @Override
-//    public Role saveRole(Role role) {
-//        log.info("Saving new role {}", role);
-//        return roleRepository.save(role);
-//    }
-
     @Override
     public void addRoleToUser(String email, String roleName) throws ClientNotFoundException {
         log.info("Adding role {} to user by email {}", roleName, email);
@@ -39,7 +33,7 @@ public class RoleService implements IRoleSevice {
 
         Role role = Role.valueOf(roleName);
 
-        client.getRoles().add(role);
+        client.setRole(role);
     }
 
 }

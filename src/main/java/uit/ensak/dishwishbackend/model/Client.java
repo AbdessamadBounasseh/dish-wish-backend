@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-//@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-//@DiscriminatorColumn(name="ROLE")
-//@DiscriminatorValue("CLIENT")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="TYPE")
+@DiscriminatorValue("CLIENT")
 public class Client implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,17 +66,16 @@ public class Client implements UserDetails {
     @ManyToMany(mappedBy = "clients", cascade = CascadeType.ALL)
     private List<Allergy> allergies;
 
-    @ElementCollection(targetClass = Role.class)
-    @CollectionTable(name = "client_roles", joinColumns = @JoinColumn(name = "client_id"))
+//    @ElementCollection(targetClass = Role.class)
+//    @CollectionTable(name = "client_roles", joinColumns = @JoinColumn(name = "client_id"))
     @Enumerated(EnumType.STRING)
-    private Collection<Role> roles = new ArrayList<>();
+    private Role role;
 
     // From UserDetails
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.name()))
-                .collect(Collectors.toList());
+        return role.getAuthorities();
     }
 
     @Override

@@ -20,7 +20,7 @@ public class ClientController {
     @GetMapping("/{clientId}")
     public ResponseEntity<Client> getClientById(@PathVariable Long clientId) throws ClientNotFoundException {
         Client client = clientService.getClientById(clientId);
-        return new ResponseEntity<>(client, HttpStatus.OK);
+        return ResponseEntity.ok(client);
     }
 
     @PostMapping("/save")

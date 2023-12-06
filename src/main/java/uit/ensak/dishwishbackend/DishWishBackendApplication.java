@@ -15,7 +15,7 @@ public class DishWishBackendApplication {
         SpringApplication.run(DishWishBackendApplication.class, args);
     }
 
-    @Bean
+//    @Bean
     CommandLineRunner run(ClientService clientService, RoleService roleService) {
         return args -> {
             Client client1 = new Client();
@@ -29,9 +29,6 @@ public class DishWishBackendApplication {
             client2.setLastName("El Ourrate");
             client2.setEmail("faycal@gmail.com");
             clientService.saveClient(client2);
-
-//			roleService.saveRole(Role.CLIENT);
-//			roleService.saveRole(Role.CHEF);
 
             roleService.addRoleToUser("abdessamad@gmail.com", "CLIENT");
             roleService.addRoleToUser("faycal@gmail.com", "CHEF");
