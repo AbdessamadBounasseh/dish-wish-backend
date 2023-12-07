@@ -45,6 +45,8 @@ public class Client implements UserDetails {
 
     private String phoneNumber;
 
+    private boolean isEnabled;
+
     @ColumnDefault("'src/main/resources/images/profilePhotos/default-profile-pic-dishwish.png'")
     private String photo;
 
@@ -109,6 +111,6 @@ public class Client implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
 }

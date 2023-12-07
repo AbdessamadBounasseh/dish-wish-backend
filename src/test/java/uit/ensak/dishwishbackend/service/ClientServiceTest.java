@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
+import uit.ensak.dishwishbackend.repository.TokenRepository;
 
 import java.util.Optional;
 
@@ -21,11 +22,14 @@ class ClientServiceTest {
     @Mock
     private ClientRepository clientRepository;
 
+    @Mock
+    private TokenRepository tokenRepository;
+
     private ClientService clientService;
 
     @BeforeEach
     void setUp() {
-        clientService = new ClientService(clientRepository);
+        clientService = new ClientService(clientRepository, tokenRepository);
     }
 
     @Test

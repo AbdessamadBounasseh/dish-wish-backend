@@ -14,4 +14,6 @@ public interface IClientService {
     Client getClientByEmail(String email);
 
     List<Client> getAllClients();
+
+    void saveUserVerificationToken(Client client, String token);
 }

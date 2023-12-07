@@ -52,7 +52,7 @@ public class JwtUtils {
         return isValid;
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         boolean isExpired = extractExpiration(token).before(new Date());
 
         log.debug("Token expiration check: {}", isExpired ? "expired" : "not expired");

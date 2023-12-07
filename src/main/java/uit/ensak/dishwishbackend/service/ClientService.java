@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
+import uit.ensak.dishwishbackend.model.VerificationToken;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
+import uit.ensak.dishwishbackend.repository.TokenRepository;
 
 import java.util.List;
 
@@ -21,9 +23,11 @@ import java.nio.file.Paths;
 public class ClientService implements IClientService {
 
     private final ClientRepository clientRepository;
+    private final TokenRepository tokenRepository;
 
-    public ClientService(ClientRepository clientRepository) {
+    public ClientService(ClientRepository clientRepository, TokenRepository tokenRepository) {
         this.clientRepository = clientRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     public Client getClientById(long id) throws ClientNotFoundException {
@@ -47,6 +51,12 @@ public class ClientService implements IClientService {
     public List<Client> getAllClients() {
         log.info("Fetching all clients");
         return clientRepository.findAll();
+    }
+
+    @Override
+    public void saveUserVerificationToken(Client client, String token) {
+        var verificationToken = new VerificationToken(client, token);
+        tokenRepository.save(verificationToken);
     }
 
     public void updateClient(long clientId, Client updateClient, MultipartFile photo) throws IOException {
