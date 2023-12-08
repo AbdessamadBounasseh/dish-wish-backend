@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+import uit.ensak.dishwishbackend.exception.VerificationTokenNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
+import uit.ensak.dishwishbackend.model.VerificationToken;
 import uit.ensak.dishwishbackend.security.JwtUtils;
 import uit.ensak.dishwishbackend.service.ClientService;
 import uit.ensak.dishwishbackend.service.auth.AuthenticationService;
@@ -40,7 +42,8 @@ public class AuthenticationController {
     }
 
     @GetMapping("/register/verify-email")
-    private ResponseEntity<String> verifyEmail(@RequestParam String token) {
+    private ResponseEntity<String> verifyEmail(@RequestParam String code) throws VerificationTokenNotFoundException {
+        String token = tokenService.getTokenByCode(code);
         UserDetails userDetails = userDetailsService
                 .loadUserByUsername(jwtUtils.extractUsername(token));
         Client client = clientService.getClientByEmail(userDetails.getUsername());

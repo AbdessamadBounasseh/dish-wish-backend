@@ -19,6 +19,8 @@ public class VerificationToken {
 
     private String token;
 
+    private String code;
+
     private Date expirationTime;
 
     private static final int EXPIRATION_TIME = 10;
@@ -27,9 +29,10 @@ public class VerificationToken {
     @JoinColumn(name = "client_id")
     private Client client;
 
-    public VerificationToken(Client client, String token) {
+    public VerificationToken(Client client, String token, String code) {
         super();
         this.token = token;
+        this.code = code;
         this.client = client;
         this.expirationTime = getTokenExpirationTime();
     }
@@ -37,6 +40,7 @@ public class VerificationToken {
     public VerificationToken(String token) {
         super();
         this.token = token;
+        this.code = code;
         this.expirationTime = getTokenExpirationTime();
     }
 
