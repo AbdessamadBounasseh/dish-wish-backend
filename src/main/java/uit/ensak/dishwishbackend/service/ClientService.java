@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -64,10 +65,11 @@ public class ClientService implements IClientService {
         return clientRepository.findAll();
     }
 
-
     @Override
     public void saveUserVerificationToken(Client client, String token) {
-        var verificationToken = new VerificationToken(client, token);
+        UUID uuid = UUID.randomUUID();
+        String code = uuid.toString().replaceAll("-", "").substring(0, 6);
+        var verificationToken = new VerificationToken(client, token, code);
         tokenRepository.save(verificationToken);
     }
   

@@ -15,9 +15,10 @@ public class RegistrationCompleteEvent extends ApplicationEvent {
 
     private final String verificationToken;
 
-    public RegistrationCompleteEvent(Client client, String applicationUrl, String verificationToken) {
+    public RegistrationCompleteEvent(Client client,
+                                     String applicationUrl,
+                                     String verificationToken) {
         super(client);
-
         this.client = client;
         this.applicationUrl = applicationUrl;
         this.verificationToken = verificationToken;
