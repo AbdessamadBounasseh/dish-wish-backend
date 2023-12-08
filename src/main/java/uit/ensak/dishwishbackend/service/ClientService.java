@@ -7,9 +7,11 @@ import org.springframework.web.multipart.MultipartFile;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Allergy;
 import uit.ensak.dishwishbackend.model.Client;
+import uit.ensak.dishwishbackend.model.VerificationToken;
+import uit.ensak.dishwishbackend.repository.ClientRepository;
+import uit.ensak.dishwishbackend.repository.TokenRepository;
 import uit.ensak.dishwishbackend.model.Diet;
 import uit.ensak.dishwishbackend.repository.AllergyRepository;
-import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.DietRepository;
 
 import java.util.Arrays;
@@ -27,13 +29,16 @@ import java.util.Optional;
 public class ClientService implements IClientService {
 
     private final ClientRepository clientRepository;
+    private final TokenRepository tokenRepository;
+
     private final AllergyRepository allergyRepository;
     private final DietRepository dietRepository;
 
-    public ClientService(ClientRepository clientRepository, AllergyRepository allergyRepository, DietRepository dietRepository) {
+    public ClientService(ClientRepository clientRepository, AllergyRepository allergyRepository, DietRepository dietRepository, TokenRepository tokenRepository) {
         this.clientRepository = clientRepository;
         this.allergyRepository = allergyRepository;
         this.dietRepository = dietRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     public Client getClientById(long id) throws ClientNotFoundException {
@@ -59,9 +64,17 @@ public class ClientService implements IClientService {
         return clientRepository.findAll();
     }
 
+
+    @Override
+    public void saveUserVerificationToken(Client client, String token) {
+        var verificationToken = new VerificationToken(client, token);
+        tokenRepository.save(verificationToken);
+    }
+  
     public String updateClient(long clientId, Client updateClient, MultipartFile photo) throws IOException {
         log.info("Updating user of id {} ", clientId);
         updateClient.setId(clientId);
+
         String basePath = "src/main/resources/images/profilePhotos/";
         String[] allowedExtensions = {"jpg", "jpeg", "png"};
 

@@ -44,8 +44,10 @@ public class SecurityConfig {
 //                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         http
+//                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/auth/**").permitAll())
+//                .authorizeHttpRequests(ar -> ar.requestMatchers("/chef/**").hasAnyAuthority("CHEF"))
                 .authorizeHttpRequests(ar -> ar.anyRequest().authenticated())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
