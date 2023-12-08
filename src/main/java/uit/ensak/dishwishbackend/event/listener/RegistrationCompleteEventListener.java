@@ -11,18 +11,22 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import uit.ensak.dishwishbackend.event.RegistrationCompleteEvent;
+import uit.ensak.dishwishbackend.exception.VerificationTokenNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.service.ClientService;
+import uit.ensak.dishwishbackend.service.auth.VerificationTokenService;
 
 import java.io.UnsupportedEncodingException;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class RegistrationCompleteEventListener implements ApplicationListener<RegistrationCompleteEvent> {
 
     private final ClientService clientService;
     private final JavaMailSender mailSender;
+    private final VerificationTokenService tokenService;
 
     private Client client;
 
@@ -36,17 +40,18 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
     private String emailVerification;
 
     @Override
-    @Transactional
     public void onApplicationEvent(RegistrationCompleteEvent event) {
         client = event.getClient();
         String token = event.getVerificationToken();
-        clientService.saveUserVerificationToken(client, token);
-        String url = event.getApplicationUrl() + "auth/register/verify-email?token=" + token;
+
         try {
+            clientService.saveUserVerificationToken(client, token);
+            String code = tokenService.getCodeByToken(token);
+
+            String url = event.getApplicationUrl() + "auth/register/verify-email?code=" + code;
             sendVerificationEmail(url);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+
+        } catch (VerificationTokenNotFoundException | MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
