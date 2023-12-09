@@ -67,6 +67,7 @@ public class AuthenticationController {
         log.info("Received authentication request for user: {}", request.getEmail());
         AuthenticationResponse response = authenticationService.authenticate(request);
         log.info("Authentication successful for user: {}", response.getToken());
+
         return ResponseEntity.ok().body(response);
     }
 }
