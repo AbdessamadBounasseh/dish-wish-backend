@@ -23,9 +23,19 @@ public class ClientController {
         return new ResponseEntity<>(client, HttpStatus.OK);
     }
 
-    @PostMapping("/add")
+    @PostMapping("/create")
     public ResponseEntity<String> createClient(@RequestBody Client client) {
         clientService.saveClient(client);
         return ResponseEntity.status(HttpStatus.CREATED).body("Client saved successfully");
+    }
+
+    @PutMapping("/{clientId}/switch-role")
+    public ResponseEntity<String> switchRole(@PathVariable Long clientId) {
+        try {
+            clientService.switchRole(clientId);
+            return ResponseEntity.ok("Role switched successfully");
+        } catch (ClientNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

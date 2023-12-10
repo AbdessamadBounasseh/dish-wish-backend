@@ -1,5 +1,8 @@
 package uit.ensak.dishwishbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +20,10 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "ROLE", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("CLIENT")
+
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,11 +49,11 @@ public class Client {
     @UpdateTimestamp(source = SourceType.DB)
     private Instant lastUpdatedOn;
 
-
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<Notification> notifications;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<Command> commands;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
@@ -57,4 +64,13 @@ public class Client {
 
     @ManyToMany(mappedBy = "clients", cascade = CascadeType.ALL)
     private List<Allergy> allergies;
+
+    @JsonProperty("ROLE")
+    public String getRole() {
+        return "CLIENT";
+    }
+
+    public void setRole(String client) {
+    }
+
 }

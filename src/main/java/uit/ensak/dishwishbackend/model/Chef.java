@@ -1,6 +1,8 @@
 package uit.ensak.dishwishbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+
+@DiscriminatorValue("CHEF")
 public class Chef extends Client {
 
     private String bio;
@@ -26,4 +30,10 @@ public class Chef extends Client {
     @OneToMany
             (mappedBy = "chef", cascade = CascadeType.ALL)
     private List<Rating> ratings;
+
+    @Override
+    @JsonProperty("ROLE")
+    public String getRole() {
+        return "CHEF";
+    }
 }

@@ -1,5 +1,6 @@
 package uit.ensak.dishwishbackend.model;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Command {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,9 +44,12 @@ public class Command {
 
     @ManyToOne
     @JoinColumn(name="client_id", nullable=false)
+    @JsonIgnoreProperties("commands")
     private Client client;
 
+
     @ManyToOne
-    @JoinColumn(name="chef_id", nullable=false)
+    @JoinColumn(name="chef_id", nullable=true)
+    @JsonIgnoreProperties("commands")
     private Chef chef;
 }
