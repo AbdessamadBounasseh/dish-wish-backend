@@ -10,6 +10,7 @@ import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.repository.AllergyRepository;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
+import uit.ensak.dishwishbackend.repository.TokenRepository;
 import uit.ensak.dishwishbackend.repository.DietRepository;
 
 import java.util.Optional;
@@ -25,12 +26,15 @@ class ClientServiceTest {
     private AllergyRepository allergyRepository;
     private DietRepository dietRepository;
 
+    @Mock
+    private TokenRepository tokenRepository;
+
     private ClientService clientService;
 
 
     @BeforeEach
     void setUp() {
-        clientService = new ClientService(clientRepository, allergyRepository, dietRepository);
+        clientService = new ClientService(clientRepository, allergyRepository, dietRepository, tokenRepository);
     }
 
     @Test

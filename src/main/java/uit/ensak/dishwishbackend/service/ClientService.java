@@ -6,16 +6,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Client;
-import uit.ensak.dishwishbackend.repository.AllergyRepository;
+import uit.ensak.dishwishbackend.model.VerificationToken;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
+import uit.ensak.dishwishbackend.repository.TokenRepository;
+import uit.ensak.dishwishbackend.model.Diet;
+import uit.ensak.dishwishbackend.repository.AllergyRepository;
 import uit.ensak.dishwishbackend.repository.DietRepository;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 
 @Service
 @Transactional
@@ -23,13 +30,16 @@ import java.util.List;
 public class ClientService implements IClientService {
 
     private final ClientRepository clientRepository;
+    private final TokenRepository tokenRepository;
+
     private final AllergyRepository allergyRepository;
     private final DietRepository dietRepository;
 
-    public ClientService(ClientRepository clientRepository, AllergyRepository allergyRepository, DietRepository dietRepository) {
+    public ClientService(ClientRepository clientRepository, AllergyRepository allergyRepository, DietRepository dietRepository, TokenRepository tokenRepository) {
         this.clientRepository = clientRepository;
         this.allergyRepository = allergyRepository;
         this.dietRepository = dietRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     public Client getClientById(long id) throws ClientNotFoundException {
@@ -55,9 +65,18 @@ public class ClientService implements IClientService {
         return clientRepository.findAll();
     }
 
+    @Override
+    public void saveUserVerificationToken(Client client, String token) {
+        UUID uuid = UUID.randomUUID();
+        String code = uuid.toString().replaceAll("-", "").substring(0, 6);
+        var verificationToken = new VerificationToken(client, token, code);
+        tokenRepository.save(verificationToken);
+    }
+  
     public String updateClient(long clientId, Client updateClient, MultipartFile photo) throws IOException {
         log.info("Updating user of id {} ", clientId);
         updateClient.setId(clientId);
+
         String basePath = "src/main/resources/images/profilePhotos/";
         String[] allowedExtensions = {"jpg", "jpeg", "png"};
 

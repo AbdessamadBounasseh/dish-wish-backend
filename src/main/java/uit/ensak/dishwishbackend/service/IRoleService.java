@@ -6,7 +6,5 @@ import uit.ensak.dishwishbackend.model.Role;
 
 public interface IRoleService {
 
-//    Role saveRole(Role role);
-
     void addRoleToUser(String email, String roleName) throws ClientNotFoundException, RoleNotFoundException;
 }
