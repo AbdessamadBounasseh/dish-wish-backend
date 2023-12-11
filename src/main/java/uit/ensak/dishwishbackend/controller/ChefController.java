@@ -37,7 +37,7 @@ public class ChefController {
                                                @RequestPart("photo") MultipartFile photo) throws IOException {
         String response = this.chefService.updateChef(chefId, chefMapper.fromChefDTO(chefDTO), photo);
 
-        if(response == "OK") {
+        if(response.equals("OK")) {
             return ResponseEntity.status(HttpStatus.OK).body("Cook updated successfully");
         }
         else {
@@ -48,10 +48,10 @@ public class ChefController {
     @PostMapping(value = "/certificate/{chefId}", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> handleCertificate(@PathVariable long chefId, @RequestBody MultipartFile certificate) throws ClientNotFoundException, IOException {
         String response = this.chefService.handleCertificate(chefId,certificate);
-        if(response == "OK") {
+        if(response.equals("OK")) {
             return ResponseEntity.status(HttpStatus.OK).body("Certificate submitted successfully");
         }
-        else if(response == "Not allowed extension") {
+        else if(response.equals("Not allowed extension")) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Not allowed extension for Certificate");
         }
         else{
@@ -61,10 +61,10 @@ public class ChefController {
     @PostMapping(value = "/idCard/{chefId}", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> handleIdCard(@PathVariable long chefId, @RequestBody MultipartFile idCard) throws ClientNotFoundException, IOException{
         String response = this.chefService.handleIdCard(chefId,idCard);
-        if(response == "OK") {
+        if(response.equals("OK")) {
             return ResponseEntity.status(HttpStatus.OK).body("idCard submitted successfully");
         }
-        else if(response == "Not allowed extension") {
+        else if(response.equals("Not allowed extension")) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Not allowed extension for idCard");
         }
         else{
