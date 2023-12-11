@@ -9,18 +9,13 @@ import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.model.VerificationToken;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.TokenRepository;
-import uit.ensak.dishwishbackend.model.Diet;
-import uit.ensak.dishwishbackend.repository.AllergyRepository;
-import uit.ensak.dishwishbackend.repository.DietRepository;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -32,13 +27,9 @@ public class ClientService implements IClientService {
     private final ClientRepository clientRepository;
     private final TokenRepository tokenRepository;
 
-    private final AllergyRepository allergyRepository;
-    private final DietRepository dietRepository;
 
-    public ClientService(ClientRepository clientRepository, AllergyRepository allergyRepository, DietRepository dietRepository, TokenRepository tokenRepository) {
+    public ClientService(ClientRepository clientRepository, TokenRepository tokenRepository) {
         this.clientRepository = clientRepository;
-        this.allergyRepository = allergyRepository;
-        this.dietRepository = dietRepository;
         this.tokenRepository = tokenRepository;
     }
 
@@ -98,20 +89,23 @@ public class ClientService implements IClientService {
     private String saveFile(long id, MultipartFile file, String basePath, String[] allowedExtensions) throws IOException {
 
         String originalFileName = file.getOriginalFilename();
-        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+        String fileExtension = null;
+        if (originalFileName != null) {
+            fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+        }
 
-        log.info("Saving user of id {}", +id + " file : ", originalFileName);
+        log.info("Saving user of id {} file {} ",id, originalFileName);
 
-        if (Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase())){
-            if (originalFileName == "default-profile-pic-dishwish") {
-                return basePath + "default-profile-pic-dishwish";
+        if (fileExtension != null && Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase())){
+            if (originalFileName.equals("default-profile-pic-dish-wish")) {
+                return basePath + "default-profile-pic-dish-wish";
             } else {
 
                 File existingFile = new File(basePath + originalFileName);
                 if (existingFile.exists()) {
                     return basePath + originalFileName;
                 } else {
-                    String filename = String.valueOf(id) + "_" + originalFileName;
+                    String filename = id + "_" + originalFileName;
                     String filePath = basePath + filename;
                     Files.write(Paths.get(filePath), file.getBytes());
                     return filePath;

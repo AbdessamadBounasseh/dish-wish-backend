@@ -41,7 +41,7 @@ public class ClientController {
     public ResponseEntity<String> updateClient(@PathVariable long chefId, @RequestPart("client") ClientDTO clientDTO,
                                                @RequestPart("photo") MultipartFile photo) throws IOException {
         String response = this.clientService.updateClient(chefId, clientMapper.fromClientDTO(clientDTO), photo);
-        if(response == "OK") {
+        if(response.equals("OK")) {
             return ResponseEntity.status(HttpStatus.OK).body("Client updated successfully");
         }
         else {

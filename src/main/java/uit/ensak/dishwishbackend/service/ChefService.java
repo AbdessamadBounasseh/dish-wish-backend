@@ -5,9 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Chef;
-import uit.ensak.dishwishbackend.repository.AllergyRepository;
 import uit.ensak.dishwishbackend.repository.ChefRepository;
-import uit.ensak.dishwishbackend.repository.DietRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,13 +18,10 @@ import java.util.Optional;
 @Slf4j
 public class ChefService {
     private final ChefRepository chefRepository;
-    private final AllergyRepository allergyRepository;
-    private final DietRepository dietRepository;
 
-    public ChefService(ChefRepository chefRepository, AllergyRepository allergyRepository, DietRepository dietRepository) {
+
+    public ChefService(ChefRepository chefRepository) {
         this.chefRepository = chefRepository;
-        this.allergyRepository = allergyRepository;
-        this.dietRepository = dietRepository;
     }
 
 
@@ -36,7 +31,7 @@ public class ChefService {
     }
 
     public void saveChef(Chef chef) {
-        log.info("Saving cook : ", chef);
+        log.info("Saving cook {} ", chef);
         chefRepository.save(chef);
     }
 
@@ -98,27 +93,32 @@ public class ChefService {
     private String saveFile(long id, MultipartFile file, String basePath, String[] allowedExtensions) throws IOException {
 
         String originalFileName = file.getOriginalFilename();
-        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+        String fileExtension = null;
+        if (originalFileName != null) {
+            fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+        }
 
-        log.info("Saving user of id {}", +id + " file : ", originalFileName);
+        log.info("Saving user of id {} file {} ",id, originalFileName);
 
-        if (Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase())) {
-            if (originalFileName == "default-profile-pic-dishwish") {
-                return basePath + "default-profile-pic-dishwish";
+        if (fileExtension != null && Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase())){
+            if (originalFileName.equals("default-profile-pic-dish-wish")) {
+                return basePath + "default-profile-pic-dish-wish";
             } else {
 
                 File existingFile = new File(basePath + originalFileName);
                 if (existingFile.exists()) {
                     return basePath + originalFileName;
                 } else {
-                    String filename = String.valueOf(id) + "_" + originalFileName;
+                    String filename = id + "_" + originalFileName;
                     String filePath = basePath + filename;
                     Files.write(Paths.get(filePath), file.getBytes());
                     return filePath;
                 }
             }
-        } else {
+        }
+        else {
             return null;
         }
+
     }
 }
