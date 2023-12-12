@@ -32,13 +32,8 @@ public class ClientService implements IClientService {
     private final ClientRepository clientRepository;
     private final TokenRepository tokenRepository;
 
-    private final AllergyRepository allergyRepository;
-    private final DietRepository dietRepository;
-
-    public ClientService(ClientRepository clientRepository, AllergyRepository allergyRepository, DietRepository dietRepository, TokenRepository tokenRepository) {
+     public ClientService(ClientRepository clientRepository, TokenRepository tokenRepository) {
         this.clientRepository = clientRepository;
-        this.allergyRepository = allergyRepository;
-        this.dietRepository = dietRepository;
         this.tokenRepository = tokenRepository;
     }
 
@@ -72,7 +67,20 @@ public class ClientService implements IClientService {
         var verificationToken = new VerificationToken(client, token, code);
         tokenRepository.save(verificationToken);
     }
-  
+
+    @Override
+    public void revokeAllUserTokens(Client client) {
+        var validUserTokens = tokenRepository
+                .findAllValidTokenByUser(client.getId());
+        if (validUserTokens.isEmpty())
+            return;
+        validUserTokens.forEach(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
+    }
+
     public String updateClient(long clientId, Client updateClient, MultipartFile photo) throws IOException {
         log.info("Updating user of id {} ", clientId);
         updateClient.setId(clientId);
@@ -90,31 +98,6 @@ public class ClientService implements IClientService {
         }
     }
 
-    public void updateClientAllergies(long id, List<Allergy> allergies) throws ClientNotFoundException {
-        log.info("Updating User allergies : ", allergies);
-        Optional<Client> optionalClient = Optional.ofNullable(this.getClientById(id));
-        if (optionalClient.isPresent()) {
-            Client client = optionalClient.get();
-            for (Allergy allergy : allergies) {
-                allergyRepository.save(allergy);
-            }
-            client.setAllergies(allergies);
-            this.clientRepository.save(client);
-        }
-    }
-
-    public void updateClientDiets(long id, List<Diet> diets) throws ClientNotFoundException {
-        log.info("Updating User diets : ", diets);
-        Optional<Client> optionalClient = Optional.ofNullable(this.getClientById(id));
-        if (optionalClient.isPresent()) {
-            Client client = optionalClient.get();
-            for (Diet diet : diets) {
-                dietRepository.save(diet);
-            }
-            client.setDiets(diets);
-            this.clientRepository.save(client);
-        }
-    }
 
     public void deleteClientAccount(long clientId) {
         log.info("Deleting client of id {} ", clientId);
@@ -124,20 +107,23 @@ public class ClientService implements IClientService {
     private String saveFile(long id, MultipartFile file, String basePath, String[] allowedExtensions) throws IOException {
 
         String originalFileName = file.getOriginalFilename();
-        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+        String fileExtension = null;
+        if (originalFileName != null) {
+            fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+        }
 
-        log.info("Saving user of id {}", +id + " file : ", originalFileName);
+        log.info("Saving user of id {} file {} ",id, originalFileName);
 
-        if (Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase())){
-            if (originalFileName == "default-profile-pic-dishwish") {
-                return basePath + "default-profile-pic-dishwish";
+        if (fileExtension != null && Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase())){
+            if (originalFileName.equals("default-profile-pic-dish-wish")) {
+                return basePath + "default-profile-pic-dish-wish";
             } else {
 
                 File existingFile = new File(basePath + originalFileName);
                 if (existingFile.exists()) {
                     return basePath + originalFileName;
                 } else {
-                    String filename = String.valueOf(id) + "_" + originalFileName;
+                    String filename = id + "_" + originalFileName;
                     String filePath = basePath + filename;
                     Files.write(Paths.get(filePath), file.getBytes());
                     return filePath;

@@ -1,14 +1,14 @@
 package uit.ensak.dishwishbackend.dto;
 
+
 import lombok.Data;
-import java.time.Instant;
+import uit.ensak.dishwishbackend.model.Allergy;
+import uit.ensak.dishwishbackend.model.Diet;
+
+import java.util.List;
 
 @Data
 public class ClientDTO {
-
-    private String email;
-
-    private String password;
 
     private String firstName;
 
@@ -18,10 +18,9 @@ public class ClientDTO {
 
     private String phoneNumber;
 
-    private String photo;
+    private List<Diet> diets;
 
-    private Instant createdOn;
+    private List<Allergy> allergies;
 
-    private Instant lastUpdatedOn;
 
 }

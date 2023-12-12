@@ -14,16 +14,21 @@ public class VerificationTokenService {
         this.tokenRepository = tokenRepository;
     }
 
+    public VerificationToken getByToken(String token) throws VerificationTokenNotFoundException {
+        return tokenRepository.findByToken(token)
+                .orElseThrow(() -> new VerificationTokenNotFoundException("Verification token by token '"+token+"' could not be found"));
+    }
+
     public String getTokenByCode(String code) throws VerificationTokenNotFoundException {
-        VerificationToken token = tokenRepository.findByCode(code)
+        return tokenRepository.findByCode(code)
+                .map(VerificationToken::getToken)
                 .orElseThrow(() -> new VerificationTokenNotFoundException("Verification token by code '"+code+"' could not be found"));
-        return token.getToken();
     }
 
     public String getCodeByToken(String token) throws VerificationTokenNotFoundException {
-        VerificationToken verificationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new VerificationTokenNotFoundException("Verification token by token '"+token+"' could not be found"));;
-        return verificationToken.getCode();
+        return tokenRepository.findByToken(token)
+                .map(VerificationToken::getCode)
+                .orElseThrow(() -> new VerificationTokenNotFoundException("Verification token by token '"+token+"' could not be found"));
     }
 
     public void deleteToken(String token){
