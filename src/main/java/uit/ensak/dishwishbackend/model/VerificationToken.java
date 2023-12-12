@@ -17,15 +17,20 @@ public class VerificationToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String token;
 
     private String code;
 
     private Date expirationTime;
 
+    public boolean revoked;
+
+    public boolean expired;
+
     private static final int EXPIRATION_TIME = 10;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 

@@ -16,4 +16,6 @@ public interface IClientService {
     List<Client> getAllClients();
 
     void saveUserVerificationToken(Client client, String token);
+
+    void revokeAllUserTokens(Client client);
 }
