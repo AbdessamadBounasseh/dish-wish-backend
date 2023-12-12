@@ -5,19 +5,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
+import uit.ensak.dishwishbackend.model.Allergy;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.model.VerificationToken;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.TokenRepository;
+import uit.ensak.dishwishbackend.model.Diet;
+import uit.ensak.dishwishbackend.repository.AllergyRepository;
+import uit.ensak.dishwishbackend.repository.DietRepository;
+
+import java.util.Arrays;
+import java.util.List;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-
 
 @Service
 @Transactional
@@ -27,8 +32,7 @@ public class ClientService implements IClientService {
     private final ClientRepository clientRepository;
     private final TokenRepository tokenRepository;
 
-
-    public ClientService(ClientRepository clientRepository, TokenRepository tokenRepository) {
+     public ClientService(ClientRepository clientRepository, TokenRepository tokenRepository) {
         this.clientRepository = clientRepository;
         this.tokenRepository = tokenRepository;
     }
@@ -63,7 +67,20 @@ public class ClientService implements IClientService {
         var verificationToken = new VerificationToken(client, token, code);
         tokenRepository.save(verificationToken);
     }
-  
+
+    @Override
+    public void revokeAllUserTokens(Client client) {
+        var validUserTokens = tokenRepository
+                .findAllValidTokenByUser(client.getId());
+        if (validUserTokens.isEmpty())
+            return;
+        validUserTokens.forEach(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
+    }
+
     public String updateClient(long clientId, Client updateClient, MultipartFile photo) throws IOException {
         log.info("Updating user of id {} ", clientId);
         updateClient.setId(clientId);
@@ -80,6 +97,7 @@ public class ClientService implements IClientService {
             return "Not allowed extension";
         }
     }
+
 
     public void deleteClientAccount(long clientId) {
         log.info("Deleting client of id {} ", clientId);

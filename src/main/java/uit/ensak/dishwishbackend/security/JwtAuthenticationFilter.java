@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import uit.ensak.dishwishbackend.exception.VerificationTokenNotFoundException;
+import uit.ensak.dishwishbackend.service.auth.VerificationTokenService;
 
 import java.io.IOException;
 
@@ -19,12 +22,14 @@ import java.io.IOException;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtUtils jwtUtils;
+    private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final VerificationTokenService tokenService;
 
-    public JwtAuthenticationFilter(JwtUtils jwtUtils, UserDetailsService userDetailsService) {
-        this.jwtUtils = jwtUtils;
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, VerificationTokenService tokenService) {
+        this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -52,15 +57,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        userEmail = jwtUtils.extractUsername(jwt);
+        userEmail = jwtService.extractUsername(jwt);
 
         log.info("Checking if the user isn't authenticated");
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             log.info("Fetching user information");
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if (jwtUtils.isTokenValid(jwt, userDetails)) {
-                System.out.println(userDetails.getAuthorities());
+            boolean isTokenValid = false;
+            try {
+                isTokenValid = !tokenService.getByToken(jwt).isExpired()
+                        && !tokenService.getByToken(jwt).isRevoked();
+            } catch (VerificationTokenNotFoundException e) {
+                e.printStackTrace();
+            }
+            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,

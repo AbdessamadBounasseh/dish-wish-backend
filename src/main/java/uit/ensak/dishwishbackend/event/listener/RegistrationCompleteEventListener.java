@@ -36,7 +36,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
     @Value("${mail.address}")
     private String mailAddress;
 
-    @Value("${string.email_verification}")
+    @Value("${string.email-verification}")
     private String emailVerification;
 
     @Override
@@ -45,7 +45,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         String token = event.getVerificationToken();
 
         try {
-            clientService.saveUserVerificationToken(client, token);
+//            clientService.saveUserVerificationToken(client, token);
             String code = tokenService.getCodeByToken(token);
 
             String url = event.getApplicationUrl() + "auth/register/verify-email?code=" + code;
