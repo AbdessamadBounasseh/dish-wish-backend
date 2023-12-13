@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TokenRepository extends JpaRepository<VerificationToken, Long> {
+
     void deleteByToken(String token);
 
     Optional<VerificationToken> findByCode(String code);
@@ -20,4 +21,8 @@ public interface TokenRepository extends JpaRepository<VerificationToken, Long> 
       where u.id = :id and (t.expired = false or t.revoked = false)\s
       """)
     List<VerificationToken> findAllValidTokenByUser(Long id);
+
+    void deleteAllByClientId(Long id);
+
+    List<VerificationToken> findAllByClientId(Long id);
 }
