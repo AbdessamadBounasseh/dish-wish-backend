@@ -4,26 +4,19 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.transaction.annotation.Transactional;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
-import uit.ensak.dishwishbackend.model.Allergy;
 import uit.ensak.dishwishbackend.model.Chef;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.model.VerificationToken;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.TokenRepository;
-import uit.ensak.dishwishbackend.model.Diet;
-import uit.ensak.dishwishbackend.repository.AllergyRepository;
-import uit.ensak.dishwishbackend.repository.DietRepository;
-
-import java.util.Arrays;
-import java.util.List;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service

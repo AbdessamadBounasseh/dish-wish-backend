@@ -33,7 +33,7 @@ public class RoleService implements IRoleService {
 
         Role role = Role.valueOf(roleName);
 
-        client.setRole(role);
+        client.setRole(String.valueOf(role));
     }
 
 }
