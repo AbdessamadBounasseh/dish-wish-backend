@@ -96,6 +96,9 @@ public class ClientService implements IClientService {
 
     public void deleteClientAccount(long clientId) {
         log.info("Deleting client of id {} ", clientId);
+        List<VerificationToken> tokens = tokenRepository.findAllByClientId(clientId);
+        tokenRepository.deleteAll(tokens);
+//        this.tokenRepository.deleteAllByClientId(clientId);
         this.clientRepository.deleteById(clientId);
     }
 
