@@ -30,10 +30,4 @@ public class Chef extends Client {
     @OneToMany
             (mappedBy = "chef", cascade = CascadeType.ALL)
     private List<Rating> ratings;
-
-    @Override
-    @JsonProperty("ROLE")
-    public String getRole() {
-        return "CHEF";
-    }
 }

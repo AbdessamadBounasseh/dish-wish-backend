@@ -110,13 +110,4 @@ public class Client implements UserDetails {
     public boolean isEnabled() {
         return isEnabled;
     }
-
-    @JsonProperty("ROLE")
-    public String getRole() {
-        return "CLIENT";
-    }
-
-    public void setRole(String client) {
-    }
-
 }
