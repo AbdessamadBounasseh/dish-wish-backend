@@ -1,7 +1,6 @@
 package uit.ensak.dishwishbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -22,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="TYPE")
+@DiscriminatorColumn(name="TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("CLIENT")
 public class Client implements UserDetails {
     @Id
@@ -41,6 +40,9 @@ public class Client implements UserDetails {
     private String address;
 
     private String phoneNumber;
+
+    @Column(name = "TYPE", insertable = false, updatable = false)
+    private String TYPE;
 
     private boolean isEnabled;
 
