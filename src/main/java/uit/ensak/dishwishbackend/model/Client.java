@@ -1,8 +1,10 @@
 package uit.ensak.dishwishbackend.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,11 +20,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="TYPE")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "ROLE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("CLIENT")
-public class Client implements UserDetails {
+
+public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -51,11 +53,11 @@ public class Client implements UserDetails {
     @UpdateTimestamp(source = SourceType.DB)
     private Instant lastUpdatedOn;
 
-
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<Notification> notifications;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<Command> commands;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
@@ -108,4 +110,13 @@ public class Client implements UserDetails {
     public boolean isEnabled() {
         return isEnabled;
     }
+
+    @JsonProperty("ROLE")
+    public String getRole() {
+        return "CLIENT";
+    }
+
+    public void setRole(String client) {
+    }
+
 }

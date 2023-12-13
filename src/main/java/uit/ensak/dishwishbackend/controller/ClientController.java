@@ -28,11 +28,12 @@ public class ClientController {
 
     @GetMapping("/{clientId}")
     public ResponseEntity<Client> getClientById(@PathVariable Long clientId) throws ClientNotFoundException {
-        return ResponseEntity.ok(clientService.getClientById(clientId));
+        Client client = clientService.getClientById(clientId);
+        return new ResponseEntity<>(client, HttpStatus.OK);
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<Client> saveClient(@RequestBody Client client) {
+    @PostMapping("/create")
+    public ResponseEntity<String> createClient(@RequestBody Client client) {
         clientService.saveClient(client);
         return ResponseEntity.status(HttpStatus.CREATED).body(client);
     }
@@ -53,5 +54,15 @@ public class ClientController {
     public ResponseEntity<String> deleteClientAccount(@PathVariable long clientId) {
         this.clientService.deleteClientAccount(clientId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted successfully");
+    }
+
+    @PutMapping("/{clientId}/switch-role")
+    public ResponseEntity<String> switchRole(@PathVariable Long clientId) {
+        try {
+            clientService.switchRole(clientId);
+            return ResponseEntity.ok("Role switched successfully");
+        } catch (ClientNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
