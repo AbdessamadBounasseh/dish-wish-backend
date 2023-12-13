@@ -1,5 +1,7 @@
 package uit.ensak.dishwishbackend.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,8 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class RoleService implements IRoleService {
-
+    @PersistenceContext
+    private EntityManager entityManager;
     private final ClientRepository clientRepository;
 
     public RoleService(ClientRepository clientRepository) {
@@ -34,6 +37,11 @@ public class RoleService implements IRoleService {
         Role role = Role.valueOf(roleName);
 
         client.setRole(role);
+
+        long clientId = client.getId();
+        entityManager.createNativeQuery("UPDATE client SET TYPE = 'CHEF' WHERE id = :clientId")
+                .setParameter("clientId", clientId)
+                .executeUpdate();
     }
 
 }
