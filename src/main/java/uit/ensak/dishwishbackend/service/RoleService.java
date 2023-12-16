@@ -3,6 +3,7 @@ package uit.ensak.dishwishbackend.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
@@ -13,16 +14,13 @@ import uit.ensak.dishwishbackend.repository.ClientRepository;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 @Transactional
 @Slf4j
 public class RoleService implements IRoleService {
     @PersistenceContext
     private EntityManager entityManager;
     private final ClientRepository clientRepository;
-
-    public RoleService(ClientRepository clientRepository) {
-        this.clientRepository = clientRepository;
-    }
 
     @Override
     public void addRoleToUser(String email, String roleName) throws ClientNotFoundException {
@@ -33,9 +31,7 @@ public class RoleService implements IRoleService {
             throw new ClientNotFoundException("Client by email " + email + " could not be found.");
         }
         Client client = optionalClient.get();
-
         Role role = Role.valueOf(roleName);
-
         client.setRole(role);
 
         long clientId = client.getId();

@@ -1,29 +1,30 @@
 package uit.ensak.dishwishbackend.controller;
 
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import uit.ensak.dishwishbackend.dto.ClientDTO;
+import uit.ensak.dishwishbackend.dto.ChefDTO;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
-import uit.ensak.dishwishbackend.mapper.ClientMapper;
+import uit.ensak.dishwishbackend.exception.InvalidFileExtensionException;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.service.ClientService;
 
 import java.io.IOException;
 
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
+@Transactional
 @RequestMapping("/clients")
 public class ClientController {
 
     private final ClientService clientService;
-    private final ClientMapper clientMapper;
 
-    public ClientController(ClientService clientService, ClientMapper clientMapper) {
+    public ClientController(ClientService clientService) {
         this.clientService = clientService;
-        this.clientMapper = clientMapper;
     }
 
     @GetMapping("/{clientId}")
@@ -38,31 +39,24 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.CREATED).body(client);
     }
 
-    @PutMapping(value = "/update/{clientId}", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> updateClient(@PathVariable long chefId, @RequestPart("client") ClientDTO clientDTO,
-                                               @RequestPart("photo") MultipartFile photo) throws IOException {
-        String response = this.clientService.updateClient(chefId, clientMapper.fromClientDTO(clientDTO), photo);
-        if(response.equals("OK")) {
-            return ResponseEntity.status(HttpStatus.OK).body("Client updated successfully");
-        }
-        else {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Not allowed extension");
-        }
-    }
-
-    @DeleteMapping(value = "/delete/{clientId}")
-    public ResponseEntity<String> deleteClientAccount(@PathVariable long clientId) {
-        this.clientService.deleteClientAccount(clientId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted successfully");
-    }
-
-    @PutMapping("/{clientId}/switch-role")
-    public ResponseEntity<String> switchRole(@PathVariable Long clientId) {
+    @PutMapping(value = "/update/{id}", consumes = MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateClient(@PathVariable long id, @RequestPart("user") ChefDTO userDTO,
+                                               @RequestPart("photo") MultipartFile photo) {
         try {
-            clientService.switchRole(clientId);
-            return ResponseEntity.ok("Role switched successfully");
+            Client updateUser = clientService.updateUser(id, userDTO, photo);
+            return ResponseEntity.ok(updateUser);
         } catch (ClientNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(NOT_FOUND).body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("Error during client's photo saving");
+        } catch (InvalidFileExtensionException e) {
+            return ResponseEntity.status(UNSUPPORTED_MEDIA_TYPE).body(e.getMessage());
         }
+    }
+
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<String> deleteUserAccount(@PathVariable long id) {
+        this.clientService.deleteUserAccount(id);
+        return ResponseEntity.status(NO_CONTENT).body("User deleted successfully");
     }
 }
