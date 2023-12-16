@@ -1,10 +1,10 @@
 package uit.ensak.dishwishbackend.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.Instant;
-
-@Data
+@Getter
+@Setter
 public class ChefDTO extends ClientDTO{
     private String bio;
 }

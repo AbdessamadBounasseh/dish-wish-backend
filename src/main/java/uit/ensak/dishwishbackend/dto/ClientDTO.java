@@ -1,9 +1,6 @@
 package uit.ensak.dishwishbackend.dto;
 
-
 import lombok.Data;
-import uit.ensak.dishwishbackend.model.Allergy;
-import uit.ensak.dishwishbackend.model.Diet;
 
 import java.util.List;
 
@@ -18,9 +15,7 @@ public class ClientDTO {
 
     private String phoneNumber;
 
-    private List<Diet> diets;
+    private List<DietDTO> dietsDTO;
 
-    private List<Allergy> allergies;
-
-
+    private List<AllergyDTO> allergiesDTO;
 }

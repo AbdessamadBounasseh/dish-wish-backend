@@ -7,6 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
+import uit.ensak.dishwishbackend.mapper.ChefMapper;
+import uit.ensak.dishwishbackend.mapper.ClientMapper;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.TokenRepository;
@@ -26,11 +28,13 @@ class ClientServiceTest {
     private TokenRepository tokenRepository;
 
     private ClientService clientService;
+    private ClientMapper clientMapper;
+    private ChefMapper chefMapper;
 
 
     @BeforeEach
     void setUp() {
-        clientService = new ClientService(clientRepository, tokenRepository);
+        clientService = new ClientService(clientRepository, tokenRepository, clientMapper, chefMapper);
     }
 
     @Test

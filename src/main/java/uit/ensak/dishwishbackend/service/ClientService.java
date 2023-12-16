@@ -1,13 +1,16 @@
 package uit.ensak.dishwishbackend.service;
 
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uit.ensak.dishwishbackend.dto.ChefDTO;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
-import uit.ensak.dishwishbackend.model.Chef;
-import uit.ensak.dishwishbackend.model.Client;
-import uit.ensak.dishwishbackend.model.VerificationToken;
+import uit.ensak.dishwishbackend.exception.InvalidFileExtensionException;
+import uit.ensak.dishwishbackend.mapper.ChefMapper;
+import uit.ensak.dishwishbackend.mapper.ClientMapper;
+import uit.ensak.dishwishbackend.model.*;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.TokenRepository;
 
@@ -20,22 +23,22 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 @Transactional
 @Slf4j
 public class ClientService implements IClientService {
 
     private final ClientRepository clientRepository;
     private final TokenRepository tokenRepository;
+    private final ClientMapper clientMapper;
+    private final ChefMapper chefMapper;
 
-     public ClientService(ClientRepository clientRepository, TokenRepository tokenRepository) {
-        this.clientRepository = clientRepository;
-        this.tokenRepository = tokenRepository;
-    }
+
 
     public Client getClientById(long id) throws ClientNotFoundException {
         log.info("Fetching user by id {}", id);
         return clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException("Client by Id " + id + " could not be found."));
+                .orElseThrow(() -> new ClientNotFoundException("User by Id " + id + " could not be found."));
     }
 
     public Client saveClient(Client client) {
@@ -76,34 +79,43 @@ public class ClientService implements IClientService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public String updateClient(long clientId, Client updateClient, MultipartFile photo) throws IOException {
-        log.info("Updating user of id {} ", clientId);
-        updateClient.setId(clientId);
+    public Client updateUser(long id, ChefDTO updateUserDTO, MultipartFile photo) throws IOException, ClientNotFoundException {
+        log.info("Updating user of id {} and {}", id, updateUserDTO);
+        Client updateUser =this.getClientById(id);
+        this.deleteOldDietsAndAllergiesAssoc(updateUser);
+        if (updateUser instanceof Chef) {
+            updateUser = chefMapper.fromChefDtoToChef(updateUserDTO,(Chef) updateUser);
+        }
+        else{
+            updateUser = clientMapper.fromClientDtoToClient(updateUserDTO,updateUser);
+        }
 
         String basePath = "src/main/resources/images/profilePhotos/";
         String[] allowedExtensions = {"jpg", "jpeg", "png"};
+        String savingPhotoResponse = this.saveFile(id,photo,basePath,allowedExtensions);
 
-        if(this.saveFile(clientId,photo,basePath,allowedExtensions)!=null) {
-            updateClient.setPhoto(this.saveFile(clientId, photo, basePath, allowedExtensions));
-            clientRepository.save(updateClient);
-            return "OK";
+        updateUser.setPhoto(savingPhotoResponse);
+        return updateUser;
+    }
+    public void deleteOldDietsAndAllergiesAssoc(Client updateUser){
+        for (Diet diet : updateUser.getDiets()) {
+            diet.getClients().remove(updateUser);
         }
-        else{
-            return "Not allowed extension";
+        for (Allergy allergy : updateUser.getAllergies()) {
+            allergy.getClients().remove(updateUser);
         }
+        updateUser.getDiets().clear();
+        updateUser.getAllergies().clear();
     }
 
-
-    public void deleteClientAccount(long clientId) {
-        log.info("Deleting client of id {} ", clientId);
-        List<VerificationToken> tokens = tokenRepository.findAllByClientId(clientId);
+    public void deleteUserAccount(long id) {
+        log.info("Deleting User of id {} ", id);
+        List<VerificationToken> tokens = tokenRepository.findAllByClientId(id);
         tokenRepository.deleteAll(tokens);
-//        this.tokenRepository.deleteAllByClientId(clientId);
-        this.clientRepository.deleteById(clientId);
+        this.clientRepository.deleteById(id);
     }
 
     private String saveFile(long id, MultipartFile file, String basePath, String[] allowedExtensions) throws IOException {
-
         String originalFileName = file.getOriginalFilename();
         String fileExtension = null;
         if (originalFileName != null) {
@@ -115,8 +127,8 @@ public class ClientService implements IClientService {
         if (fileExtension != null && Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase())){
             if (originalFileName.equals("default-profile-pic-dish-wish")) {
                 return basePath + "default-profile-pic-dish-wish";
-            } else {
-
+            }
+            else {
                 File existingFile = new File(basePath + originalFileName);
                 if (existingFile.exists()) {
                     return basePath + originalFileName;
@@ -129,55 +141,8 @@ public class ClientService implements IClientService {
             }
         }
         else {
-            return null;
+            throw new InvalidFileExtensionException("Not Allowed Extension");
         }
 
     }
-
-
-    @Transactional
-    public void switchRole(Long clientId) throws ClientNotFoundException {
-        Client client = getClientById(clientId);
-
-        if (client instanceof Chef) {
-            // If the client is a chef, switch to client
-            Client updatedClient = new Client();
-            copyFields(client, updatedClient);
-            //updatedClient.setId(clientId);
-            clientRepository.save(updatedClient);
-        } else if (client instanceof Client) {
-            // If the client is a regular client, switch to chef
-            Chef updatedChef = new Chef();
-            copyFields(client, updatedChef);
-            //updatedChef.setId(clientId);
-            clientRepository.save(updatedChef);
-        }
-
-        clientRepository.delete(client);
-    }
-
-    private void copyFields(Client source, Client target) {
-        // Copy common fields from source to target
-        target.setEmail(source.getEmail());
-        target.setPassword(source.getPassword());
-        target.setFirstName(source.getFirstName());
-        target.setLastName(source.getLastName());
-        target.setAddress(source.getAddress());
-        target.setPhoneNumber(source.getPhoneNumber());
-        target.setPhoto(source.getPhoto());
-
-        // Check if source is a Chef before copying Chef-specific fields
-        if (source instanceof Chef && target instanceof Chef) {
-            Chef sourceChef = (Chef) source;
-            Chef targetChef = (Chef) target;
-            targetChef.setBio(sourceChef.getBio());
-            targetChef.setIdCard(sourceChef.getIdCard());
-            targetChef.setCertificate(sourceChef.getCertificate());
-        }
-    }
-
-
-
-
-
 }

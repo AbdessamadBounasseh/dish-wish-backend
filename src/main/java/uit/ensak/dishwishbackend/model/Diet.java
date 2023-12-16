@@ -1,14 +1,12 @@
 package uit.ensak.dishwishbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SourceType;
 
-import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -23,17 +21,7 @@ public class Diet {
 
     private String title;
 
-    private String description;
-
-    @CreationTimestamp(source = SourceType.DB)
-    private Instant createdOn;
-
-
-    @ManyToMany
-    @JoinTable(
-            name = "diet_client",
-            joinColumns = { @JoinColumn(name = "diet_id") },
-            inverseJoinColumns = { @JoinColumn(name = "client_id") }
-    )
+    @ManyToMany(mappedBy = "diets")
+    @JsonBackReference
     private List<Client> clients;
 }
