@@ -1,10 +1,12 @@
 package uit.ensak.dishwishbackend.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class AllergyDTO {
     private Long id;
     private String title;

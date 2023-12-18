@@ -2,8 +2,11 @@ package uit.ensak.dishwishbackend.dto;
 
 import lombok.*;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class DietDTO {
     private Long id;
     private String title;
