@@ -1,6 +1,5 @@
 package uit.ensak.dishwishbackend.mapper;
 
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import uit.ensak.dishwishbackend.dto.DietDTO;
@@ -9,16 +8,18 @@ import uit.ensak.dishwishbackend.model.Diet;
 import uit.ensak.dishwishbackend.repository.DietRepository;
 
 @Component
-@Transactional
 @AllArgsConstructor
 public class DietMapper {
     private final DietRepository dietRepository;
-    public Diet fromDietDtoToDiet(DietDTO dietDTO, Client client){
-        Diet diet = dietRepository.findById(dietDTO.getId()).orElseThrow();
+
+    public Diet fromDietDtoToDiet(DietDTO dietDTO, Client client) {
+        Diet diet = dietRepository.findById(dietDTO.getId()).get();
         diet.getClients().add(client);
-        return diet;
+        return dietRepository.save(diet);
+
     }
-    public DietDTO fromDietToDietDto(Diet diet){
+
+    public DietDTO fromDietToDietDto(Diet diet) {
         return new DietDTO(diet.getId(), diet.getTitle());
     }
 }

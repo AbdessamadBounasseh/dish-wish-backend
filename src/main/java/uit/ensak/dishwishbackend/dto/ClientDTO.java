@@ -1,10 +1,14 @@
 package uit.ensak.dishwishbackend.dto;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ClientDTO {
 
     private String firstName;
