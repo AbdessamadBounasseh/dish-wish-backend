@@ -20,7 +20,7 @@ public interface TokenRepository extends JpaRepository<VerificationToken, Long> 
       on t.client.id = u.id\s
       where u.id = :id and (t.expired = false or t.revoked = false)\s
       """)
-    List<VerificationToken> findAllValidTokenByUser(Long id);
+    List<VerificationToken> findAllValidTokenByUserId(Long id);
 
     void deleteAllByClientId(Long id);
 
