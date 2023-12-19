@@ -69,7 +69,7 @@ public class ClientService implements IClientService {
     @Override
     public void revokeAllUserTokens(Client client) {
         var validUserTokens = tokenRepository
-                .findAllValidTokenByUser(client.getId());
+                .findAllValidTokenByUserId(client.getId());
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {
