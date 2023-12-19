@@ -43,8 +43,6 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
         Client client = Client
                 .builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.CLIENT)
