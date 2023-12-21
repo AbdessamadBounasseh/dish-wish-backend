@@ -145,4 +145,46 @@ public class ClientService implements IClientService {
         }
 
     }
+
+
+    @Transactional
+    public void switchRole(Long clientId) throws ClientNotFoundException {
+        Client client = getClientById(clientId);
+
+        if (client instanceof Chef) {
+            // If the client is a chef, switch to client
+            Client updatedClient = new Client();
+            copyFields(client, updatedClient);
+            //updatedClient.setId(clientId);
+            clientRepository.save(updatedClient);
+        } else if (client instanceof Client) {
+            // If the client is a regular client, switch to chef
+            Chef updatedChef = new Chef();
+            copyFields(client, updatedChef);
+            //updatedChef.setId(clientId);
+            clientRepository.save(updatedChef);
+        }
+
+        clientRepository.delete(client);
+    }
+
+    private void copyFields(Client source, Client target) {
+        // Copy common fields from source to target
+        target.setEmail(source.getEmail());
+        target.setPassword(source.getPassword());
+        target.setFirstName(source.getFirstName());
+        target.setLastName(source.getLastName());
+        target.setAddress(source.getAddress());
+        target.setPhoneNumber(source.getPhoneNumber());
+        target.setPhoto(source.getPhoto());
+
+        // Check if source is a Chef before copying Chef-specific fields
+        if (source instanceof Chef && target instanceof Chef) {
+            Chef sourceChef = (Chef) source;
+            Chef targetChef = (Chef) target;
+            targetChef.setBio(sourceChef.getBio());
+            targetChef.setIdCard(sourceChef.getIdCard());
+            targetChef.setCertificate(sourceChef.getCertificate());
+        }
+    }
 }

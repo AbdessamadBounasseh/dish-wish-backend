@@ -1,11 +1,9 @@
 package uit.ensak.dishwishbackend.controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uit.ensak.dishwishbackend.dto.CommandDTO;
-import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.exception.CommandNotFoundException;
 import uit.ensak.dishwishbackend.model.Command;
 import uit.ensak.dishwishbackend.service.CommandService;
@@ -46,7 +44,7 @@ public class CommandController {
     }
 
 
-    @PutMapping("/{commandId}/assign/{chefId}")
+    /*@PutMapping("/{commandId}/assign/{chefId}")
     public ResponseEntity<String> assignOrderToChef(@PathVariable Long commandId, @PathVariable Long chefId) {
         boolean assigned = CommandService.assignCommandToChef(commandId, chefId);
         if (assigned) {
@@ -54,7 +52,7 @@ public class CommandController {
         } else {
             return new ResponseEntity<>("Failed to assign order", HttpStatus.BAD_REQUEST);
         }
-    }
+    }*/
 
     @DeleteMapping("/delete/{commandId}")
     public ResponseEntity<String> deleteCommand(@PathVariable Long commandId) {
