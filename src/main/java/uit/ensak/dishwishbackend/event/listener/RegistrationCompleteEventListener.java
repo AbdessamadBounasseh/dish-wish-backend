@@ -45,26 +45,23 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         String token = event.getVerificationToken();
 
         try {
-//            clientService.saveUserVerificationToken(client, token);
             String code = tokenService.getCodeByToken(token);
 
-            String url = event.getApplicationUrl() + "auth/register/verify-email?code=" + code;
-            sendVerificationEmail(url);
+//            String url = event.getApplicationUrl() + "auth/register/verify-email?code=" + code;
+            sendVerificationEmail(code);
 
         } catch (VerificationTokenNotFoundException | MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendVerificationEmail(String url) throws MessagingException, UnsupportedEncodingException {
+    public void sendVerificationEmail(String code) throws MessagingException, UnsupportedEncodingException {
         String subject = emailVerification + " - " + appName;
         String senderName = appName;
-        String content = "<p> Bonjour " + client.getFirstName() + ", </p>\n" +
+        String content = "<p> Bonjour, </p>\n" +
                 "<p>Bienvenue sur DishWish ! Nous sommes enchantés de vous accueillir. </p>\n" +
-                "<p>Afin de compléter votre inscription, nous vous invitons à cliquer sur le lien ci-dessous.</p>\n" +
-                "<br>\n" +
-                "<a href=\"" + url + "\">Confirmer mon adresse e-mail</a>\n" +
-                "<br>\n" +
+                "<p>Veuillez utiliser le code de vérification suivant pour finaliser votre inscription sur DishWish :</p>\n" +
+                "<p><b>Code de vérification : " + code + "</b></p>\n" +
                 "<p> Nous tenons à vous remercier pour votre confiance et nous sommes impatients de vous accompagner dans cette nouvelle aventure. " +
                 "Si vous avez des questions ou besoin d'assistance, n'hésitez pas à nous contacter. </p>\n" +
                 "<p> À très bientôt, <br> DishWish</p>";
