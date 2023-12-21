@@ -49,11 +49,11 @@ public class AuthenticationController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/register/verify-email")
+    @PostMapping("/register/verify-email")
     private ResponseEntity<String> verifyEmail(@RequestParam String code) throws VerificationTokenNotFoundException {
         String url = verificationService.applicationUrl(servletRequest)+"/auth/refresh-token";
         String token = tokenService.getTokenByCode(code);
-        UserDetails userDetails = (UserDetails) tokenService.getByToken(token).getClient();
+        UserDetails userDetails = tokenService.getByToken(token).getClient();
         Client client = clientService.getClientByEmail(userDetails.getUsername());
         if (client.isEnabled()) {
             return ResponseEntity.ok().body("Your account has already been verified, you can login !");
