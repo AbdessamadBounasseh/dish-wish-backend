@@ -1,7 +1,6 @@
 package uit.ensak.dishwishbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -72,7 +71,6 @@ public class Client implements UserDetails {
             joinColumns = { @JoinColumn(name = "client_id") },
             inverseJoinColumns = { @JoinColumn(name = "diet_id") }
     )
-    @JsonManagedReference
     private List<Diet> diets;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -81,7 +79,6 @@ public class Client implements UserDetails {
             joinColumns = { @JoinColumn(name = "client_id") },
             inverseJoinColumns = { @JoinColumn(name = "allergy_id") }
     )
-    @JsonManagedReference
     private List<Allergy> allergies;
 
 //    @ElementCollection(targetClass = Role.class)
