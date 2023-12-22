@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 @DiscriminatorValue("CHEF")
 public class Chef extends Client {
 

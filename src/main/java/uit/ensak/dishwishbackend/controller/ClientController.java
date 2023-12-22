@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uit.ensak.dishwishbackend.dto.ChefDTO;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
-import uit.ensak.dishwishbackend.exception.InvalidFileExtensionException;
+import uit.ensak.dishwishbackend.model.Chef;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.service.ClientService;
 
 import java.io.IOException;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
@@ -32,6 +32,11 @@ public class ClientController {
         Client client = clientService.getClientById(clientId);
         return new ResponseEntity<>(client, HttpStatus.OK);
     }
+    @GetMapping("/email")
+    public ResponseEntity<Client> getClientByEmail(@RequestBody String email) throws ClientNotFoundException {
+        Client client = clientService.getClientByEmail(email);
+        return new ResponseEntity<>(client, HttpStatus.OK);
+    }
 
     @PostMapping("/create")
     public ResponseEntity<Client> createClient(@RequestBody Client client) {
@@ -41,17 +46,17 @@ public class ClientController {
 
     @PutMapping(value = "/update/{id}", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateClient(@PathVariable long id, @RequestPart("user") ChefDTO userDTO,
-                                               @RequestPart("photo") MultipartFile photo) {
-        try {
+                                          @RequestPart("photo") MultipartFile photo) throws ClientNotFoundException, IOException {
             Client updateUser = clientService.updateUser(id, userDTO, photo);
             return ResponseEntity.ok(updateUser);
-        } catch (ClientNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(e.getMessage());
-        } catch (IOException e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("Error during client's photo saving");
-        } catch (InvalidFileExtensionException e) {
-            return ResponseEntity.status(UNSUPPORTED_MEDIA_TYPE).body(e.getMessage());
-        }
+    }
+    @PostMapping(value = "/becomeCook", consumes = MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Chef> becomeCook(@RequestPart("email") String email,
+                                                    @RequestPart("idCard") MultipartFile idCard,
+                                                    @RequestPart("certificate") MultipartFile certificate) throws ClientNotFoundException, IOException {
+
+            Chef chef = this.clientService.becomeCook(email, "CHEF",idCard, certificate);
+            return ResponseEntity.ok(chef);
     }
 
     @DeleteMapping(value = "/delete/{id}")

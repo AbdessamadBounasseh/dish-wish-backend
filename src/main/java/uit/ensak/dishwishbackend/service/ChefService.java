@@ -26,37 +26,39 @@ public class ChefService {
                 .orElseThrow(() -> new ClientNotFoundException("Cook by Id " + id + " could not be found."));
     }
 
-    public void handleCertificate(long chefId, MultipartFile certificate) throws ClientNotFoundException, IOException {
-        Chef chef = getChefById(chefId);
+    public Chef saveChef(Chef chef) {
+        log.info("Saving new cook {}", chef);
+        return chefRepository.save(chef);
+    }
+
+    public void handleCertificate(Chef chef, MultipartFile certificate) throws IOException {
         String basePath = "src/main/resources/images/certificates/";
-        String[] allowedExtensions = {"jpg", "jpeg", "png", "pdf"};
-
-        String saveFileResponse = this.saveFile(chefId, certificate, basePath, allowedExtensions);
+        String saveFileResponse = this.saveFile(chef.getId(), certificate, basePath);
         chef.setCertificate(saveFileResponse);
-        this.chefRepository.save(chef);
     }
 
-    public void handleIdCard(long chefId, MultipartFile idCard) throws ClientNotFoundException, IOException {
-        Chef chef = getChefById(chefId);
+    public void handleIdCard(Chef chef, MultipartFile idCard) throws IOException {
         String basePath = "src/main/resources/images/idCards/";
-        String[] allowedExtensions = {"jpg", "jpeg", "png"};
-
-        String saveFileResponse = this.saveFile(chefId, idCard, basePath, allowedExtensions);
+        String saveFileResponse = this.saveFile(chef.getId(), idCard, basePath);
         chef.setIdCard(saveFileResponse);
-        this.chefRepository.save(chef);
     }
 
-    private String saveFile(long id, MultipartFile file, String basePath, String[] allowedExtensions) throws IOException {
+    public boolean verifyFileExtension(MultipartFile file) {
         String originalFileName = file.getOriginalFilename();
+        String[] allowedExtensions = {"jpg", "jpeg", "png"};
         String fileExtension = null;
         if (originalFileName != null) {
             fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
         }
+        return fileExtension != null && Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase());
+    }
 
+    private String saveFile(long id, MultipartFile file, String basePath) throws IOException {
+        String originalFileName = file.getOriginalFilename();
         log.info("Saving user of id {} file {} ", id, originalFileName);
 
-        if (fileExtension != null && Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase())) {
-            if (originalFileName.equals("default-profile-pic-dish-wish")) {
+        if (verifyFileExtension(file)) {
+            if (originalFileName != null && originalFileName.equals("default-profile-pic-dish-wish")) {
                 return basePath + "default-profile-pic-dish-wish";
             } else {
                 File existingFile = new File(basePath + originalFileName);
@@ -72,6 +74,5 @@ public class ChefService {
         } else {
             throw new InvalidFileExtensionException("Not Allowed Extension");
         }
-
     }
 }

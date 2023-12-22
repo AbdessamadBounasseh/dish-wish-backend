@@ -1,5 +1,7 @@
 package uit.ensak.dishwishbackend.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +29,13 @@ import java.util.UUID;
 @Transactional
 @Slf4j
 public class ClientService implements IClientService {
-
+    @PersistenceContext
+    private EntityManager entityManager;
     private final ClientRepository clientRepository;
     private final TokenRepository tokenRepository;
     private final ClientMapper clientMapper;
     private final ChefMapper chefMapper;
-
-
+    private final ChefService chefService;
 
     public Client getClientById(long id) throws ClientNotFoundException {
         log.info("Fetching user by id {}", id);
@@ -79,25 +81,55 @@ public class ClientService implements IClientService {
         tokenRepository.saveAll(validUserTokens);
     }
 
+    public Chef becomeCook(String email, String roleName, MultipartFile idCard, MultipartFile certificate) throws ClientNotFoundException, IOException {
+        log.info("Adding role {} to user by email {}", roleName, email);
+
+        if (verifyFileExtension(idCard) && verifyFileExtension(certificate)) {
+            Client client = clientRepository.findClientByEmail(email)
+                    .orElseThrow(() -> new ClientNotFoundException("Client by email " + email + " could not be found."));
+            Long clientId = client.getId();
+            Role role = Role.valueOf(roleName);
+            client.setRole(role);
+            changeClientType(clientId);
+            clientRepository.save(client);
+
+            entityManager.clear();
+
+            Chef chef = chefService.getChefById(clientId);
+            chefService.handleIdCard(chef, idCard);
+            chefService.handleCertificate(chef, certificate);
+            return chefService.saveChef(chef);
+        } else {
+            throw new InvalidFileExtensionException("Not Allowed Extension for idCard or Certificate");
+        }
+    }
+
+    public void changeClientType(Long clientId) {
+        log.info("Changing client of id {} type from client to chef ",clientId);
+        entityManager.createNativeQuery("UPDATE client SET TYPE = 'CHEF' WHERE id = :clientId")
+                .setParameter("clientId", clientId)
+                .executeUpdate();
+    }
+
     public Client updateUser(long id, ChefDTO updateUserDTO, MultipartFile photo) throws IOException, ClientNotFoundException {
         log.info("Updating user of id {} and {}", id, updateUserDTO);
-        Client updateUser =this.getClientById(id);
+        Client updateUser = this.getClientById(id);
         this.deleteOldDietsAndAllergiesAssoc(updateUser);
         if (updateUser instanceof Chef) {
-            updateUser = chefMapper.fromChefDtoToChef(updateUserDTO,(Chef) updateUser);
-        }
-        else{
-            updateUser = clientMapper.fromClientDtoToClient(updateUserDTO,updateUser);
+            updateUser = chefMapper.fromChefDtoToChef(updateUserDTO, (Chef) updateUser);
+        } else {
+            updateUser = clientMapper.fromClientDtoToClient(updateUserDTO, updateUser);
         }
 
         String basePath = "src/main/resources/images/profilePhotos/";
         String[] allowedExtensions = {"jpg", "jpeg", "png"};
-        String savingPhotoResponse = this.saveFile(id,photo,basePath,allowedExtensions);
+        String savingPhotoResponse = this.saveFile(id, photo, basePath, allowedExtensions);
 
         updateUser.setPhoto(savingPhotoResponse);
         return updateUser;
     }
-    public void deleteOldDietsAndAllergiesAssoc(Client updateUser){
+
+    public void deleteOldDietsAndAllergiesAssoc(Client updateUser) {
         for (Diet diet : updateUser.getDiets()) {
             diet.getClients().remove(updateUser);
         }
@@ -115,6 +147,16 @@ public class ClientService implements IClientService {
         this.clientRepository.deleteById(id);
     }
 
+    public boolean verifyFileExtension(MultipartFile file) {
+        String originalFileName = file.getOriginalFilename();
+        String[] allowedExtensions = {"jpg", "jpeg", "png"};
+        String fileExtension = null;
+        if (originalFileName != null) {
+            fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+        }
+        return fileExtension != null && Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase());
+    }
+
     private String saveFile(long id, MultipartFile file, String basePath, String[] allowedExtensions) throws IOException {
         String originalFileName = file.getOriginalFilename();
         String fileExtension = null;
@@ -122,13 +164,12 @@ public class ClientService implements IClientService {
             fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
         }
 
-        log.info("Saving user of id {} file {} ",id, originalFileName);
+        log.info("Saving user of id {} file {} ", id, originalFileName);
 
-        if (fileExtension != null && Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase())){
-            if (originalFileName.equals("default-profile-pic-dish-wish")) {
+        if (verifyFileExtension(file)) {
+            if (originalFileName != null && originalFileName.equals("default-profile-pic-dish-wish")) {
                 return basePath + "default-profile-pic-dish-wish";
-            }
-            else {
+            } else {
                 File existingFile = new File(basePath + originalFileName);
                 if (existingFile.exists()) {
                     return basePath + originalFileName;
@@ -139,10 +180,8 @@ public class ClientService implements IClientService {
                     return filePath;
                 }
             }
-        }
-        else {
+        } else {
             throw new InvalidFileExtensionException("Not Allowed Extension");
         }
-
     }
 }
