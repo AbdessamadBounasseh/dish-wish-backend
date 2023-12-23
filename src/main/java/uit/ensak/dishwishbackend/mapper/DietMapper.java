@@ -15,12 +15,12 @@ public class DietMapper {
     private final DietRepository dietRepository;
 
     public Diet fromDietDtoToDiet(DietDTO dietDTO, Client client) {
-        Diet diet = dietRepository.findById(dietDTO.getId()).orElseThrow();
+        Diet diet = dietRepository.findByTitle(dietDTO.getTitle()).orElseThrow();
         diet.getClients().add(client);
         return diet;
     }
 
     public DietDTO fromDietToDietDto(Diet diet) {
-        return new DietDTO(diet.getId(), diet.getTitle());
+        return new DietDTO(diet.getTitle());
     }
 }

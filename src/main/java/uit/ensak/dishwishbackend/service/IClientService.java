@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IClientService {
 
-    Client getClientById(long id) throws ClientNotFoundException;
+    Client getClientById(Long id) throws ClientNotFoundException;
 
     Client saveClient(Client client);
 

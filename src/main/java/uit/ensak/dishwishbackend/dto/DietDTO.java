@@ -8,6 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class DietDTO {
-    private Long id;
     private String title;
 }

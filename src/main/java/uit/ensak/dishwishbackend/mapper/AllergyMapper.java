@@ -16,11 +16,11 @@ public class AllergyMapper {
     private final AllergyRepository allergyRepository;
 
     public Allergy fromAllergyDtoToAllergy(AllergyDTO allergyDTO, Client client) {
-        Allergy allergy = allergyRepository.findById(allergyDTO.getId()).orElseThrow();
+        Allergy allergy = allergyRepository.findByTitle(allergyDTO.getTitle()).orElseThrow();
         allergy.getClients().add(client);
         return allergy;
     }
     public AllergyDTO fromAllergyToAllergyDto(Allergy allergy) {
-        return new AllergyDTO(allergy.getId(), allergy.getTitle());
+        return new AllergyDTO(allergy.getTitle());
     }
 }

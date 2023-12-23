@@ -21,7 +21,7 @@ import java.util.Arrays;
 public class ChefService {
     private final ChefRepository chefRepository;
 
-    public Chef getChefById(long id) throws ClientNotFoundException {
+    public Chef getChefById(Long id) throws ClientNotFoundException {
         return chefRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Cook by Id " + id + " could not be found."));
     }
@@ -31,44 +31,42 @@ public class ChefService {
         return chefRepository.save(chef);
     }
 
-    public void handleCertificate(Chef chef, MultipartFile certificate) throws IOException {
+    public String handleCertificate(Chef chef, MultipartFile certificate) throws IOException {
         String basePath = "src/main/resources/images/certificates/";
-        String saveFileResponse = this.saveFile(chef.getId(), certificate, basePath);
-        chef.setCertificate(saveFileResponse);
+        return this.saveImage(chef.getId(), certificate, basePath);
     }
 
-    public void handleIdCard(Chef chef, MultipartFile idCard) throws IOException {
+    public String handleIdCard(Chef chef, MultipartFile idCard) throws IOException {
         String basePath = "src/main/resources/images/idCards/";
-        String saveFileResponse = this.saveFile(chef.getId(), idCard, basePath);
-        chef.setIdCard(saveFileResponse);
+        return this.saveImage(chef.getId(), idCard, basePath);
     }
 
-    public boolean verifyFileExtension(MultipartFile file) {
-        String originalFileName = file.getOriginalFilename();
+    public boolean verifyImageExtension(MultipartFile image) {
+        String originalImageName = image.getOriginalFilename();
         String[] allowedExtensions = {"jpg", "jpeg", "png"};
-        String fileExtension = null;
-        if (originalFileName != null) {
-            fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+        String imageExtension = null;
+        if (originalImageName != null) {
+            imageExtension = originalImageName.substring(originalImageName.lastIndexOf('.') + 1);
         }
-        return fileExtension != null && Arrays.asList(allowedExtensions).contains(fileExtension.toLowerCase());
+        return imageExtension != null && Arrays.asList(allowedExtensions).contains(imageExtension.toLowerCase());
     }
 
-    private String saveFile(long id, MultipartFile file, String basePath) throws IOException {
-        String originalFileName = file.getOriginalFilename();
-        log.info("Saving user of id {} file {} ", id, originalFileName);
+    public String saveImage(long id, MultipartFile image, String basePath) throws IOException {
+        String originalImageName = image.getOriginalFilename();
+        log.info("Saving user of id {} file {} ", id, originalImageName);
 
-        if (verifyFileExtension(file)) {
-            if (originalFileName != null && originalFileName.equals("default-profile-pic-dish-wish")) {
+        if (verifyImageExtension(image)) {
+            if (originalImageName != null && originalImageName.contains("default-profile-pic-dish-wish")) {
                 return basePath + "default-profile-pic-dish-wish";
             } else {
-                File existingFile = new File(basePath + originalFileName);
-                if (existingFile.exists()) {
-                    return basePath + originalFileName;
+                File existingImage = new File(basePath + originalImageName);
+                if (existingImage.exists()) {
+                    return basePath + originalImageName;
                 } else {
-                    String filename = id + "_" + originalFileName;
-                    String filePath = basePath + filename;
-                    Files.write(Paths.get(filePath), file.getBytes());
-                    return filePath;
+                    String imageName = id + "_" + originalImageName;
+                    String imagePath = basePath + imageName;
+                    Files.write(Paths.get(imagePath), image.getBytes());
+                    return imagePath;
                 }
             }
         } else {

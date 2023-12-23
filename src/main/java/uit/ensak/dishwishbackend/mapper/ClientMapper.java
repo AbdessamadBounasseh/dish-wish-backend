@@ -16,8 +16,10 @@ public class ClientMapper {
     private final DietMapper dietMapper;
     private final AllergyMapper allergyMapper;
     public Client fromClientDtoToClient(ClientDTO clientDTO, Client client){
-
+        System.out.println("hello");
         BeanUtils.copyProperties(clientDTO, client);
+        System.out.println("hello");
+        System.out.println(client);
         if (clientDTO.getDietsDTO() != null) {
             client.setDiets(clientDTO.getDietsDTO().stream()
                     .map(dietDTO -> dietMapper.fromDietDtoToDiet(dietDTO, client))
@@ -28,6 +30,7 @@ public class ClientMapper {
                     .map(allergyDTO ->allergyMapper.fromAllergyDtoToAllergy(allergyDTO, client))
                     .collect(Collectors.toList()));
         }
+        System.out.println("hello");
         return client;
     }
     public ClientDTO fromClientToClientDto(Client client){
