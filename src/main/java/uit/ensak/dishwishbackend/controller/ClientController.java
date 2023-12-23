@@ -50,17 +50,17 @@ public class ClientController {
             Client updateUser = clientService.updateUser(id, userDTO, photo);
             return ResponseEntity.ok(updateUser);
     }
-    @PostMapping(value = "/becomeCook", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Chef> becomeCook(@RequestPart("email") String email,
+    @PostMapping(value = "/becomeCook/{clientId}", consumes = MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Chef> becomeCook(@PathVariable Long clientId,
                                                     @RequestPart("idCard") MultipartFile idCard,
                                                     @RequestPart("certificate") MultipartFile certificate) throws ClientNotFoundException, IOException {
 
-            Chef chef = this.clientService.becomeCook(email, "CHEF",idCard, certificate);
+            Chef chef = this.clientService.becomeCook(clientId, "CHEF",idCard, certificate);
             return ResponseEntity.ok(chef);
     }
 
     @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<String> deleteUserAccount(@PathVariable long id) {
+    public ResponseEntity<String> deleteUserAccount(@PathVariable long id) throws ClientNotFoundException {
         this.clientService.deleteUserAccount(id);
         return ResponseEntity.status(NO_CONTENT).body("User deleted successfully");
     }

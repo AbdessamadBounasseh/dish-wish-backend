@@ -7,15 +7,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uit.ensak.dishwishbackend.dto.AllergyDTO;
-import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.model.Allergy;
+import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.repository.AllergyRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,12 +27,11 @@ public class AllergyMapperTests {
 
     @Test
     public void AllergyMapper_fromAllergyDtoToAllergy_ReturnAllergy() {
-        Long allergyId = 1L;
         Client client1 = Client.builder().id(1L).email("nash1@gmail.com").build();
         Allergy allergy = Allergy.builder().id(1L).title("Oeuf").clients(new ArrayList<>()).build();
-        AllergyDTO allergyDTO = AllergyDTO.builder().id(allergyId).title("Végétarien").build();
+        AllergyDTO allergyDTO = AllergyDTO.builder().title("Oeuf").build();
 
-        when(allergyRepository.findById(any(Long.class))).thenReturn(Optional.of(allergy));
+        when(allergyRepository.findByTitle(anyString())).thenReturn(Optional.of(allergy));
 
         Allergy allergyReturn = allergyMapper.fromAllergyDtoToAllergy(allergyDTO, client1);
         allergy.getClients().add(client1);
@@ -43,13 +42,12 @@ public class AllergyMapperTests {
     @Test
     public void AllergyMapper_fromAllergyToAllergyDto_ReturnAllergyDto(){
         Client client1 = Client.builder().id(1L).email("nash1@gmail.com").build();
-        Allergy allergy = Allergy.builder().id(1L).title("Végétarien").clients(Collections.singletonList(client1)).build();
+        Allergy allergy = Allergy.builder().id(1L).title("Oeuf").clients(Collections.singletonList(client1)).build();
 
         AllergyDTO allergyDTOReturn = allergyMapper.fromAllergyToAllergyDto(allergy);
 
         Assertions.assertInstanceOf(AllergyDTO.class, allergyDTOReturn);
         Assertions.assertEquals(allergy.getTitle(),allergyDTOReturn.getTitle());
-        Assertions.assertEquals(allergy.getId(),allergyDTOReturn.getId());
     }
 }
 

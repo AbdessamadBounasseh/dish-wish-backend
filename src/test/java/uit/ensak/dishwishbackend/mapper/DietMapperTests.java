@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,12 +27,11 @@ public class DietMapperTests {
 
     @Test
     public void DietMapper_fromDietDtoToDiet_ReturnDiet() {
-        Long dietId = 1L;
         Client client1 = Client.builder().id(1L).email("nash1@gmail.com").build();
         Diet diet = Diet.builder().id(1L).title("Végétarien").clients(new ArrayList<>()).build();
-        DietDTO dietDTO = DietDTO.builder().id(dietId).title("Végétarien").build();
+        DietDTO dietDTO = DietDTO.builder().title("Végétarien").build();
 
-        when(dietRepository.findById(any(Long.class))).thenReturn(Optional.of(diet));
+        when(dietRepository.findByTitle(anyString())).thenReturn(Optional.of(diet));
 
         Diet dietReturn = dietMapper.fromDietDtoToDiet(dietDTO, client1);
         diet.getClients().add(client1);
@@ -49,6 +48,5 @@ public class DietMapperTests {
 
         Assertions.assertInstanceOf(DietDTO.class, dietDTOReturn);
         Assertions.assertEquals(diet.getTitle(),dietDTOReturn.getTitle());
-        Assertions.assertEquals(diet.getId(),dietDTOReturn.getId());
     }
 }
