@@ -64,14 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             log.info("Fetching user information");
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            boolean isTokenValid = false;
-            try {
-                isTokenValid = !tokenService.getByToken(jwt).isExpired()
-                        && !tokenService.getByToken(jwt).isRevoked();
-            } catch (VerificationTokenNotFoundException e) {
-                e.printStackTrace();
-            }
-            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
+
+            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid(jwt)) {
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -91,5 +85,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         log.info("Call the filterChain");
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isTokenValid(String jwt) {
+        boolean isTokenValid = false;
+        try {
+            isTokenValid = !tokenService.getByToken(jwt).isExpired()
+                    && !tokenService.getByToken(jwt).isRevoked();
+        } catch (VerificationTokenNotFoundException e) {
+            e.printStackTrace();
+        }
+        return isTokenValid;
     }
 }

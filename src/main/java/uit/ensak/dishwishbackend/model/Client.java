@@ -46,6 +46,9 @@ public class Client implements UserDetails {
 
     private boolean isEnabled;
 
+    @OneToMany(mappedBy = "client")
+    private List<VerificationToken> tokens;
+
     @ColumnDefault("'src/main/resources/images/profilePhotos/default-profile-pic-dish-wish.png'")
     private String photo;
 
