@@ -1,11 +1,11 @@
 package uit.ensak.dishwishbackend.controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uit.ensak.dishwishbackend.dto.CommandDTO;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
+import uit.ensak.dishwishbackend.dto.CommandDTO;
 import uit.ensak.dishwishbackend.exception.CommandNotFoundException;
 import uit.ensak.dishwishbackend.model.Command;
 import uit.ensak.dishwishbackend.service.CommandService;
@@ -76,7 +76,4 @@ public class CommandController {
             }
         }
     }
-
-
-
 

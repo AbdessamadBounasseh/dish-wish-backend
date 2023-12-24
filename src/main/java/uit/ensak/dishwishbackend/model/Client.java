@@ -71,6 +71,7 @@ public class Client implements UserDetails {
             joinColumns = { @JoinColumn(name = "client_id") },
             inverseJoinColumns = { @JoinColumn(name = "diet_id") }
     )
+    //@JsonManagedReference
     private List<Diet> diets;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -79,6 +80,7 @@ public class Client implements UserDetails {
             joinColumns = { @JoinColumn(name = "client_id") },
             inverseJoinColumns = { @JoinColumn(name = "allergy_id") }
     )
+    //@JsonManagedReference
     private List<Allergy> allergies;
 
 //    @ElementCollection(targetClass = Role.class)
