@@ -49,7 +49,7 @@ public class Command {
 
 
     @ManyToOne
-    @JoinColumn(name="chef_id", nullable=true)
+    @JoinColumn(name="chef_id")
     @JsonIgnoreProperties("commands")
     private Chef chef;
 }
