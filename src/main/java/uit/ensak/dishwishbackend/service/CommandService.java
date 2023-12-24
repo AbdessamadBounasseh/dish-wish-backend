@@ -1,14 +1,11 @@
 package uit.ensak.dishwishbackend.service;
 
-import jakarta.persistence.EntityNotFoundException;
-import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uit.ensak.dishwishbackend.dto.CommandDTO;
 import org.springframework.transaction.annotation.Transactional;
 import uit.ensak.dishwishbackend.dto.CommandDTO;
 import uit.ensak.dishwishbackend.exception.CommandNotFoundException;
@@ -16,17 +13,7 @@ import uit.ensak.dishwishbackend.model.Command;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.CommandRepository;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import org.modelmapper.ModelMapper;
 
 @Service
 public class CommandService implements ICommandService {

@@ -139,15 +139,15 @@ public class ClientService implements IClientService {
 
 public void deleteUserAccount(Long id) throws ClientNotFoundException {
     Optional<Client> client = clientRepository.findById(id);
-    if(client.isPresent()){
-    log.info("Deleting User of id {} ", id);
-    List<VerificationToken> tokens = tokenRepository.findAllByClientId(id);
-    tokenRepository.deleteAll(tokens);
-    this.clientRepository.deleteById(id);
-    }
-    else {
+    if (client.isPresent()) {
+        log.info("Deleting User of id {} ", id);
+        List<VerificationToken> tokens = tokenRepository.findAllByClientId(id);
+        tokenRepository.deleteAll(tokens);
+        this.clientRepository.deleteById(id);
+    } else {
         throw new ClientNotFoundException("User by Id " + id + " could not be found.");
     }
+}
 
 
     @Transactional
@@ -190,7 +190,7 @@ public void deleteUserAccount(Long id) throws ClientNotFoundException {
             targetChef.setCertificate(sourceChef.getCertificate());
         }
     }
-}
+
 
 public boolean verifyImageExtension(MultipartFile image) {
     String originalImageName = image.getOriginalFilename();
