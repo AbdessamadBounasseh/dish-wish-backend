@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static uit.ensak.dishwishbackend.service.ChefService.verifyExtention;
+
 @Service
 @AllArgsConstructor
 @Transactional
@@ -83,7 +85,6 @@ public class ClientService implements IClientService {
     }
 
 
-
     public void deleteOldDietsAndAllergiesAssoc(Client client) {
         for (Diet diet : client.getDiets()) {
             diet.getClients().remove(client);
@@ -94,6 +95,7 @@ public class ClientService implements IClientService {
         client.getDiets().clear();
         client.getAllergies().clear();
     }
+
     public Client updateUser(Long id, ChefDTO updateUserDTO, MultipartFile photo) throws IOException, ClientNotFoundException {
         log.info("Updating user of id {} and {}", id, updateUserDTO);
         Client updateUser = this.getClientById(id);
@@ -133,23 +135,22 @@ public class ClientService implements IClientService {
             chef.setIdCard(chefService.handleIdCard(chef, idCard));
             chef.setCertificate(chefService.handleCertificate(chef, certificate));
             return chefService.saveChef(chef);
+        } else {
+            throw new InvalidFileExtensionException("Not Allowed Extension for idCard or Certificate");
         }
-        else{
-        throw new InvalidFileExtensionException("Not Allowed Extension for idCard or Certificate");
-        }
-}
-
-public void deleteUserAccount(Long id) throws ClientNotFoundException {
-    Optional<Client> client = clientRepository.findById(id);
-    if (client.isPresent()) {
-        log.info("Deleting User of id {} ", id);
-        List<VerificationToken> tokens = tokenRepository.findAllByClientId(id);
-        tokenRepository.deleteAll(tokens);
-        this.clientRepository.deleteById(id);
-    } else {
-        throw new ClientNotFoundException("User by Id " + id + " could not be found.");
     }
-}
+
+    public void deleteUserAccount(Long id) throws ClientNotFoundException {
+        Optional<Client> client = clientRepository.findById(id);
+        if (client.isPresent()) {
+            log.info("Deleting User of id {} ", id);
+            List<VerificationToken> tokens = tokenRepository.findAllByClientId(id);
+            tokenRepository.deleteAll(tokens);
+            this.clientRepository.deleteById(id);
+        } else {
+            throw new ClientNotFoundException("User by Id " + id + " could not be found.");
+        }
+    }
 
 
     @Transactional
@@ -162,7 +163,7 @@ public void deleteUserAccount(Long id) throws ClientNotFoundException {
             copyFields(client, updatedClient);
             //updatedClient.setId(clientId);
             clientRepository.save(updatedClient);
-        } else if (client instanceof Client) {
+        } else if (client != null) {
             // If the client is a regular client, switch to chef
             Chef updatedChef = new Chef();
             copyFields(client, updatedChef);
@@ -194,36 +195,30 @@ public void deleteUserAccount(Long id) throws ClientNotFoundException {
     }
 
 
-public boolean verifyImageExtension(MultipartFile image) {
-    String originalImageName = image.getOriginalFilename();
-    String[] allowedExtensions = {"jpg", "jpeg", "png"};
-    String imageExtension = null;
-    if (originalImageName != null) {
-        imageExtension = originalImageName.substring(originalImageName.lastIndexOf('.') + 1);
+    public boolean verifyImageExtension(MultipartFile image) {
+        return verifyExtention(image);
     }
-    return imageExtension != null && Arrays.asList(allowedExtensions).contains(imageExtension.toLowerCase());
-}
 
-public String saveImage(Long id, MultipartFile image, String basePath) throws IOException {
-    String originalImageName = image.getOriginalFilename();
-    log.info("Saving user of id {} file {} ", id, originalImageName);
+    public String saveImage(Long id, MultipartFile image, String basePath) throws IOException {
+        String originalImageName = image.getOriginalFilename();
+        log.info("Saving user of id {} file {} ", id, originalImageName);
 
-    if (verifyImageExtension(image)) {
-        if (originalImageName != null && originalImageName.contains("default-profile-pic-dish-wish")) {
-            return basePath + "default-profile-pic-dish-wish";
-        } else {
-            File existingImage = new File(basePath + originalImageName);
-            if (existingImage.exists()) {
-                return basePath + originalImageName;
+        if (verifyImageExtension(image)) {
+            if (originalImageName != null && originalImageName.contains("default-profile-pic-dish-wish")) {
+                return basePath + "default-profile-pic-dish-wish";
             } else {
-                String imageName = id + "_" + originalImageName;
-                String imagePath = basePath + imageName;
-                Files.write(Paths.get(imagePath), image.getBytes());
-                return imagePath;
+                File existingImage = new File(basePath + originalImageName);
+                if (existingImage.exists()) {
+                    return basePath + originalImageName;
+                } else {
+                    String imageName = id + "_" + originalImageName;
+                    String imagePath = basePath + imageName;
+                    Files.write(Paths.get(imagePath), image.getBytes());
+                    return imagePath;
+                }
             }
+        } else {
+            throw new InvalidFileExtensionException("Not Allowed Extension");
         }
-    } else {
-        throw new InvalidFileExtensionException("Not Allowed Extension");
     }
-}
 }

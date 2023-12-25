@@ -42,6 +42,10 @@ public class ChefService {
     }
 
     public boolean verifyImageExtension(MultipartFile image) {
+        return verifyExtention(image);
+    }
+
+    static boolean verifyExtention(MultipartFile image) {
         String originalImageName = image.getOriginalFilename();
         String[] allowedExtensions = {"jpg", "jpeg", "png"};
         String imageExtension = null;
