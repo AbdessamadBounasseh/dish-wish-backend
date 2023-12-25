@@ -16,7 +16,11 @@ import java.security.Principal;
 @Slf4j
 public class PasswordController {
 
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
+
+    public PasswordController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @PostMapping
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest passwordRequest,
