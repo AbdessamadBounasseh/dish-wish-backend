@@ -82,6 +82,8 @@ public class ClientService implements IClientService {
         tokenRepository.saveAll(validUserTokens);
     }
 
+
+
     public void deleteOldDietsAndAllergiesAssoc(Client client) {
         for (Diet diet : client.getDiets()) {
             diet.getClients().remove(client);

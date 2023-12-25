@@ -7,20 +7,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
-import uit.ensak.dishwishbackend.controller.auth.AuthenticationRequest;
-import uit.ensak.dishwishbackend.controller.auth.AuthenticationResponse;
-import uit.ensak.dishwishbackend.controller.auth.RegisterRequest;
+import uit.ensak.dishwishbackend.controller.auth.payloads.AuthenticationRequest;
+import uit.ensak.dishwishbackend.controller.auth.payloads.AuthenticationResponse;
+import uit.ensak.dishwishbackend.controller.auth.payloads.ChangePasswordRequest;
+import uit.ensak.dishwishbackend.controller.auth.payloads.RegisterRequest;
 import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.model.Role;
 import uit.ensak.dishwishbackend.security.JwtService;
 import uit.ensak.dishwishbackend.service.ClientService;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @Service
 @Slf4j
@@ -124,5 +123,28 @@ public class AuthenticationService {
             }
             log.info("Call the filterChain");
         }
+    }
+
+    public void changePassword(ChangePasswordRequest passwordRequest, Principal connectedClient) {
+        var client = (Client) ((UsernamePasswordAuthenticationToken) connectedClient)
+                .getPrincipal();
+
+        if (!passwordEncoder.matches(passwordRequest.getCurrentPassword(), client.getPassword())){
+            log.error("Wrong password");
+            throw new IllegalStateException("Wrong password");
+        }
+
+        if (!passwordRequest.getNewPassword().equals(passwordRequest.getConfirmationPassword())) {
+            log.error("Passwords are not the same");
+            throw new IllegalStateException("Passwords are not the same");
+        }
+
+        log.info("Updating the password");
+
+        client.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
+
+        clientService.saveClient(client);
+
+        log.info("Updating the password");
     }
 }

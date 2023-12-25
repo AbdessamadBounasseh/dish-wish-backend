@@ -1,4 +1,4 @@
-package uit.ensak.dishwishbackend.controller.auth;
+package uit.ensak.dishwishbackend.controller.auth.payloads;
 
 import lombok.Builder;
 import lombok.Data;
