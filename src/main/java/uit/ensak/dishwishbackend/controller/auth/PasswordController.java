@@ -10,9 +10,9 @@ import uit.ensak.dishwishbackend.service.PasswordService;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 
+@Slf4j
 @RestController
 @RequestMapping("/password")
-@Slf4j
 public class PasswordController {
 
     private final PasswordService passwordService;
