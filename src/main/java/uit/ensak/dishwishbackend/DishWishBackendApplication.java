@@ -30,8 +30,15 @@ public class DishWishBackendApplication {
             client2.setEmail("faycal@gmail.com");
             clientService.saveClient(client2);
 
+            Client client3 = new Client();
+            client3.setFirstName("Meryem");
+            client3.setLastName("El Hassouni");
+            client3.setEmail("meryem@gmail.com");
+            clientService.saveClient(client3);
+
             roleService.addRoleToUser("abdessamad@gmail.com", "CLIENT");
             roleService.addRoleToUser("faycal@gmail.com", "CHEF");
+            roleService.addRoleToUser("meryem@gmail.com", "CLIENT");
         };
     }
 
