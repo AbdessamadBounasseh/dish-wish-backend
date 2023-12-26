@@ -1,10 +1,15 @@
 package uit.ensak.dishwishbackend.service.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,9 +24,11 @@ import uit.ensak.dishwishbackend.security.JwtService;
 import uit.ensak.dishwishbackend.service.ClientService;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 
 @Service
+@AllArgsConstructor
 @Slf4j
 public class AuthenticationService {
 
@@ -30,14 +37,7 @@ public class AuthenticationService {
     private final ClientService clientService;
     private final AuthenticationManager authenticationManager;
     private final EmailVerificationService emailVerificationService;
-
-    public AuthenticationService(PasswordEncoder passwordEncoder, JwtService jwtService, ClientService clientService, AuthenticationManager authenticationManager, EmailVerificationService emailVerificationService) {
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.clientService = clientService;
-        this.authenticationManager = authenticationManager;
-        this.emailVerificationService = emailVerificationService;
-    }
+    private final JavaMailSender mailSender;
 
     public AuthenticationResponse register(RegisterRequest request) {
         Client client = Client
@@ -123,28 +123,5 @@ public class AuthenticationService {
             }
             log.info("Call the filterChain");
         }
-    }
-
-    public void changePassword(ChangePasswordRequest passwordRequest, Principal connectedClient) {
-        var client = (Client) ((UsernamePasswordAuthenticationToken) connectedClient)
-                .getPrincipal();
-
-        if (!passwordEncoder.matches(passwordRequest.getCurrentPassword(), client.getPassword())){
-            log.error("Wrong password");
-            throw new IllegalStateException("Wrong password");
-        }
-
-        if (!passwordRequest.getNewPassword().equals(passwordRequest.getConfirmationPassword())) {
-            log.error("Passwords are not the same");
-            throw new IllegalStateException("Passwords are not the same");
-        }
-
-        log.info("Updating the password");
-
-        client.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
-
-        clientService.saveClient(client);
-
-        log.info("Updating the password");
     }
 }
