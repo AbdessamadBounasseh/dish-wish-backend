@@ -3,6 +3,7 @@ package uit.ensak.dishwishbackend.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,7 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class PasswordService {
 
@@ -27,9 +28,6 @@ public class PasswordService {
 
     @Value("${app.name}")
     private String appName;
-
-    @Value("${mail.address}")
-    private String mailAddress;
 
     @Value("${string.password-reset}")
     private String passwordReset;
