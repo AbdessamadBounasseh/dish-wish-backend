@@ -34,15 +34,22 @@ public class VerificationToken {
 
     private static final int EXPIRATION_TIME = 10;
 
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
+
     @CreationTimestamp(source = SourceType.DB)
     private Instant createdOn;
 
     @UpdateTimestamp(source = SourceType.DB)
     private Instant lastUpdatedOn;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id")
-    private Client client;
+    public VerificationToken(String token) {
+        super();
+        this.token = token;
+        this.code = code;
+        this.expirationTime = getTokenExpirationTime();
+    }
 
     public VerificationToken(Client client, String token, String code) {
         super();
@@ -52,17 +59,12 @@ public class VerificationToken {
         this.expirationTime = getTokenExpirationTime();
     }
 
-    public VerificationToken(String token) {
-        super();
-        this.token = token;
-        this.code = code;
-        this.expirationTime = getTokenExpirationTime();
-    }
-
     private Date getTokenExpirationTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(new Date().getTime());
         calendar.add(Calendar.MINUTE, EXPIRATION_TIME);
         return new Date(calendar.getTime().getTime());
     }
+
+
 }
