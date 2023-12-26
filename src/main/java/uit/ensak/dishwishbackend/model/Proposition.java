@@ -25,10 +25,10 @@ public class Proposition {
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name="chef_id")
+    @JoinColumn(name="chef_id", nullable=false)
     private Chef chef;
 
     @ManyToOne
-    @JoinColumn(name="command_id")
+    @JoinColumn(name="command_id",nullable=false)
     private Command command;
 }
