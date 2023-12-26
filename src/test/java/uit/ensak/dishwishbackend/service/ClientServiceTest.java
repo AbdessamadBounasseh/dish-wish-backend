@@ -50,7 +50,7 @@ class ClientServiceTest {
     private ClientService clientService;
 
     @Test
-    void getClientByIdSucceed() throws ClientNotFoundException {
+    void ClientService_getClientById_succeed() throws ClientNotFoundException {
         // given
         Long clientId = 1L;
         Client client = new Client();
@@ -67,24 +67,23 @@ class ClientServiceTest {
     }
 
     @Test
-    void getClientByIdThrowsClientNotFoundException() {
+    void ClientService_getClientById_ThrowsClientNotFoundException() {
         // given
         Long clientId = 1L;
 
+        // when
         when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
 
-        // when and then
+        // then
         assertThrows(ClientNotFoundException.class, () -> clientService.getClientById(clientId));
     }
 
     @Test
-    void saveClientSucceed() {
+    void ClientService_saveClient_succeed() {
         // given
         Long clientId = 1L;
         Client client = new Client();
         client.setId(clientId);
-
-//        when(clientRepository.save(client)).thenReturn(client);
 
         // when
         clientService.saveClient(client);
@@ -94,7 +93,7 @@ class ClientServiceTest {
     }
 
     @Test
-    void saveClientFailedBecauseOfDuplicatedIds() {
+    void ClientService_saveClient_FailedBecauseOfDuplicatedIds() {
         // given
         Long clientId = 1L;
 
