@@ -65,6 +65,4 @@ public class VerificationToken {
         calendar.add(Calendar.MINUTE, EXPIRATION_TIME);
         return new Date(calendar.getTime().getTime());
     }
-
-
 }
