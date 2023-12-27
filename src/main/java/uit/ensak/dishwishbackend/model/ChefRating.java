@@ -10,8 +10,6 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @DiscriminatorValue("CHEF_RATING")
 public class ChefRating extends Rating {
 
