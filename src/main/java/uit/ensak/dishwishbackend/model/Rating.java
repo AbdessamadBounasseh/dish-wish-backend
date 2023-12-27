@@ -16,11 +16,9 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
+@Inheritance(strategy = InheritanceType.JOINED)
+//@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 public abstract class Rating {
-//    @EmbeddedId
-//    private RatingId id;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,22 +35,24 @@ public abstract class Rating {
 
     private double rating;
 
+    @CreationTimestamp(source = SourceType.DB)
+    private Instant createdOn;
+
+
+//    @EmbeddedId
+//    private RatingId id;
 //    @ManyToOne
 //    @JoinColumn(name="star_id", nullable=false)
 //    @MapsId("starId")
 //    private Star star;
 
-
-    @CreationTimestamp(source = SourceType.DB)
-    private Instant createdOn;
-
-    @Embeddable
-    public static class RatingId implements Serializable {
-        private Long clientId;
-        private Long chefId;
-        private Long starId;
-
-        public RatingId() {
-        }
-    }
+//    @Embeddable
+//    public static class RatingId implements Serializable {
+//        private Long clientId;
+//        private Long chefId;
+//        private Long starId;
+//
+//        public RatingId() {
+//        }
+//    }
 }
