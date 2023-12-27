@@ -16,7 +16,7 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Rating {
+public abstract class Rating {
 //    @EmbeddedId
 //    private RatingId id;
     @Id
@@ -33,7 +33,7 @@ public class Rating {
     @MapsId("chefId")
     private Chef chef;
 
-    private double rate;
+    private double rating;
 
 //    @ManyToOne
 //    @JoinColumn(name="star_id", nullable=false)
