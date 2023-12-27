@@ -15,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @DiscriminatorValue("CHEF")
 public class Chef extends Client {
-
     private String bio;
 
     private String idCard;

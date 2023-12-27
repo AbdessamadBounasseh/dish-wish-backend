@@ -41,6 +41,9 @@ public class Client implements UserDetails {
 
     private String phoneNumber;
 
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    private List<Rating> ratings;
+
     @Column(name = "TYPE", insertable = false, updatable = false)
     private String TYPE;
 
@@ -64,9 +67,6 @@ public class Client implements UserDetails {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Command> commands;
-
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    private List<Rating> ratings;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
