@@ -17,7 +17,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
