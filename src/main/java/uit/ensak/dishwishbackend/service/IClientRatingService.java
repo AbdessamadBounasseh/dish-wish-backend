@@ -1,4 +1,12 @@
 package uit.ensak.dishwishbackend.service;
 
-public class IClientRatingService {
+import uit.ensak.dishwishbackend.dto.ClientDTO;
+import uit.ensak.dishwishbackend.dto.RatingDTO;
+
+import java.util.List;
+
+public interface IClientRatingService {
+    List<Double> getClientRatings(Long clientId);
+
+    ClientDTO addRatingToClient(RatingDTO ratingDetails);
 }
