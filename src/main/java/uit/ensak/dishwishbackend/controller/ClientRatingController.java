@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uit.ensak.dishwishbackend.dto.RatingDTO;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
+import uit.ensak.dishwishbackend.model.Rating;
 import uit.ensak.dishwishbackend.service.ClientRatingService;
 
 import java.util.List;
@@ -18,8 +19,8 @@ public class ClientRatingController {
     }
 
     @GetMapping("/{clientId}")
-    public ResponseEntity<List<Double>> getClientRatings(@PathVariable Long clientId) {
-        List<Double> ratings = clientRatingService.getClientRatings(clientId);
+    public ResponseEntity<List<Rating>> getClientRatings(@PathVariable Long clientId) throws ClientNotFoundException {
+        List<Rating> ratings = clientRatingService.getClientRatings(clientId);
         return ResponseEntity.ok(ratings);
     }
 
