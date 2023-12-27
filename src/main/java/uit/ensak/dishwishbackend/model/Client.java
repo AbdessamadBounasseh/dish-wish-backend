@@ -1,18 +1,17 @@
 package uit.ensak.dishwishbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -20,15 +19,16 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "ROLE", discriminatorType = DiscriminatorType.STRING)
+@Builder
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("CLIENT")
-
-public class Client {
+public class Client implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String email;
 
     private String password;
@@ -41,6 +41,15 @@ public class Client {
 
     private String phoneNumber;
 
+    @Column(name = "TYPE", insertable = false, updatable = false)
+    private String TYPE;
+
+    private boolean isEnabled;
+
+    @OneToMany(mappedBy = "client")
+    private List<VerificationToken> tokens;
+
+    @ColumnDefault("'src/main/resources/images/profilePhotos/default-profile-pic-dish-wish.png'")
     private String photo;
 
     @CreationTimestamp(source = SourceType.DB)
@@ -59,18 +68,63 @@ public class Client {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<Rating> ratings;
 
-    @ManyToMany(mappedBy = "clients", cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "client_diet",
+            joinColumns = { @JoinColumn(name = "client_id") },
+            inverseJoinColumns = { @JoinColumn(name = "diet_id") }
+    )
+    //@JsonManagedReference
     private List<Diet> diets;
 
-    @ManyToMany(mappedBy = "clients", cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "client_allergy",
+            joinColumns = { @JoinColumn(name = "client_id") },
+            inverseJoinColumns = { @JoinColumn(name = "allergy_id") }
+    )
+    //@JsonManagedReference
     private List<Allergy> allergies;
 
-    @JsonProperty("ROLE")
-    public String getRole() {
-        return "CLIENT";
+//    @ElementCollection(targetClass = Role.class)
+//    @CollectionTable(name = "client_roles", joinColumns = @JoinColumn(name = "client_id"))
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    // From UserDetails
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return role.getAuthorities();
     }
 
-    public void setRole(String client) {
+    @Override
+    public String getPassword() {
+        return password;
     }
 
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
 }

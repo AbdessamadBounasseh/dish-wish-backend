@@ -1,26 +1,30 @@
 package uit.ensak.dishwishbackend.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import uit.ensak.dishwishbackend.dto.CommandDTO;
 import uit.ensak.dishwishbackend.exception.CommandNotFoundException;
-import uit.ensak.dishwishbackend.model.Chef;
 import uit.ensak.dishwishbackend.model.Command;
+import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.CommandRepository;
-import uit.ensak.dishwishbackend.repository.ChefRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CommandService implements ICommandService {
 
     private final CommandRepository commandRepository;
-    private final ChefRepository ChefRepository;
+    private final ClientRepository clientRepository;
 
     @Autowired
-    public CommandService(CommandRepository commandRepository, ChefRepository ChefRepository) {
+    public CommandService(CommandRepository commandRepository, ClientRepository clientRepository) {
         this.commandRepository = commandRepository;
-        this.ChefRepository = ChefRepository;
+        this.clientRepository = clientRepository;
     }
 
     public List<Command> getAllCommands() {
@@ -35,6 +39,20 @@ public class CommandService implements ICommandService {
         return commandRepository.save(command);
     }
 
+    public Command updateCommand(Long commandId, CommandDTO commandDTO) throws CommandNotFoundException {
+        Command existingCommand = commandRepository.findById(commandId)
+                .orElseThrow(() -> new CommandNotFoundException("Command by Id "+ commandId +" could not be found."));
+
+        ModelMapper modelMapper = new ModelMapper();
+
+        modelMapper.getConfiguration()
+                .setMatchingStrategy(MatchingStrategies.STRICT)
+                .setPropertyCondition(context -> context.getSource() != null);
+
+        modelMapper.map(commandDTO, existingCommand);
+        return commandRepository.save(existingCommand);
+    }
+
     public boolean deleteCommand(Long id) {
         if (commandRepository.existsById(id)) {
             commandRepository.deleteById(id);
@@ -43,22 +61,33 @@ public class CommandService implements ICommandService {
         return false;
     }
 
-    public boolean assignCommandToChef(Long commandId, Long chefId) {
+    /*public boolean assignCommandToChef(Long commandId, Long chefId) {
         Optional<Command> commandOptional = commandRepository.findById(commandId);
-        Optional<Chef> chefOptional = ChefRepository.findById(chefId);
+        Optional<Client> clientOptional = clientRepository.findByIdAndRole(chefId, Role.CHEF);
 
-        if (commandOptional.isPresent() && chefOptional.isPresent()) {
+        if (commandOptional.isPresent() && clientOptional.isPresent()) {
             Command command = commandOptional.get();
-            Chef chef = chefOptional.get();
-
-            // Assign the command to the chef (update the command entity)
-            command.setChef(chef);
-            // Save the updated command back to the repository
+            Client clientChef = clientOptional.get();
+            command.setChef(clientChef);
             commandRepository.save(command);
-
             return true;
         }
         return false;
+    }*/
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Transactional
+    public boolean assignCommandToChef(Long commandId, Long chefId) {
+        int updatedRows = entityManager.createNativeQuery(
+                        "UPDATE command SET chef_id = :chefId WHERE id = :commandId")
+                .setParameter("chefId", chefId)
+                .setParameter("commandId", commandId)
+                .executeUpdate();
+
+        return updatedRows > 0;
     }
+
 
 }

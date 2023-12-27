@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <!-- Appender for INFO logs -->
+        <RollingFile name="InfoFileAppender" fileName="logs/info.log" filePattern="logs/info-%d{MM-dd-yyyy}.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+
+        <!-- Appender for ERROR logs -->
+        <RollingFile name="ErrorFileAppender" fileName="logs/error.log" filePattern="logs/error-%d{MM-dd-yyyy}.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- INFO logger -->
+        <Logger name="uit.ensak.dishwishbackend.controller.auth" level="info" additivity="false">
+            <AppenderRef ref="InfoFileAppender" />
+        </Logger>
+
+        <!-- ERROR logger -->
+        <Logger name="uit.ensak.dishwishbackend.controller.auth" level="error" additivity="false">
+            <AppenderRef ref="ErrorFileAppender" />
+        </Logger>
+
+        <!-- Root logger -->
+        <Root level="error">
+            <AppenderRef ref="ErrorFileAppender" />
+        </Root>
+    </Loggers>
+</Configuration>

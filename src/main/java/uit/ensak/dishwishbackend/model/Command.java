@@ -23,6 +23,8 @@ public class Command {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String title;
+
     private String description;
 
     private String serving;
@@ -49,7 +51,7 @@ public class Command {
 
 
     @ManyToOne
-    @JoinColumn(name="chef_id", nullable=true)
+    @JoinColumn(name="chef_id")
     @JsonIgnoreProperties("commands")
     private Chef chef;
 }
