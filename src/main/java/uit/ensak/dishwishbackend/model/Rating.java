@@ -17,8 +17,11 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Rating {
-    @EmbeddedId
-    private RatingId id;
+//    @EmbeddedId
+//    private RatingId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name="client_id", nullable=false)
@@ -30,10 +33,13 @@ public class Rating {
     @MapsId("chefId")
     private Chef chef;
 
-    @ManyToOne
-    @JoinColumn(name="star_id", nullable=false)
-    @MapsId("starId")
-    private Star star;
+    private double rate;
+
+//    @ManyToOne
+//    @JoinColumn(name="star_id", nullable=false)
+//    @MapsId("starId")
+//    private Star star;
+
 
     @CreationTimestamp(source = SourceType.DB)
     private Instant createdOn;

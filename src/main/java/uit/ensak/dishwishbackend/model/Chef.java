@@ -22,7 +22,6 @@ public class Chef extends Client {
 
     private String certificate;
 
-    @OneToMany
-            (mappedBy = "chef", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chef", cascade = CascadeType.ALL)
     private List<Rating> ratings;
 }
