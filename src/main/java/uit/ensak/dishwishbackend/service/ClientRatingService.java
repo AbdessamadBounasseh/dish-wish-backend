@@ -1,7 +1,6 @@
 package uit.ensak.dishwishbackend.service;
 
 import org.springframework.stereotype.Service;
-import uit.ensak.dishwishbackend.dto.ClientDTO;
 import uit.ensak.dishwishbackend.dto.RatingDTO;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.model.Chef;
@@ -33,7 +32,7 @@ public class ClientRatingService implements IClientRatingService{
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ClientNotFoundException("User by Id " + clientId + " could not be found."));
 
-        return ratingRepository.findByClient_IdAndType(client.getId(), "CLIENT_TYPE");
+        return ratingRepository.findByClientAndType(client, "CLIENT_TYPE");
     }
 
     @Override
