@@ -1,5 +1,6 @@
 package uit.ensak.dishwishbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,7 @@ public class VerificationToken {
 
     @ManyToOne
     @JoinColumn(name = "client_id")
+    @JsonIgnoreProperties("tokens")
     private Client client;
 
     @CreationTimestamp(source = SourceType.DB)
