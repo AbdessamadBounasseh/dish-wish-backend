@@ -7,12 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uit.ensak.dishwishbackend.dto.DietDTO;
-import uit.ensak.dishwishbackend.model.Client;
 import uit.ensak.dishwishbackend.model.Diet;
 import uit.ensak.dishwishbackend.repository.DietRepository;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,22 +24,19 @@ public class DietMapperTests {
 
     @Test
     public void DietMapper_fromDietDtoToDiet_ReturnDiet() {
-        Client client1 = Client.builder().id(1L).email("nash1@gmail.com").build();
-        Diet diet = Diet.builder().id(1L).title("Végétarien").clients(new ArrayList<>()).build();
+        Diet diet = Diet.builder().id(1L).title("Végétarien").build();
         DietDTO dietDTO = DietDTO.builder().title("Végétarien").build();
 
         when(dietRepository.findByTitle(anyString())).thenReturn(Optional.of(diet));
 
-        Diet dietReturn = dietMapper.fromDietDtoToDiet(dietDTO, client1);
-        diet.getClients().add(client1);
+        Diet dietReturn = dietMapper.fromDietDtoToDiet(dietDTO);
 
         Assertions.assertEquals(diet, dietReturn);
     }
 
     @Test
     public void DietMapper_fromDietToDietDto_ReturnDietDto(){
-        Client client1 = Client.builder().id(1L).email("nash1@gmail.com").build();
-        Diet diet = Diet.builder().id(1L).title("Végétarien").clients(Collections.singletonList(client1)).build();
+        Diet diet = Diet.builder().id(1L).title("Végétarien").build();
 
         DietDTO dietDTOReturn = dietMapper.fromDietToDietDto(diet);
 

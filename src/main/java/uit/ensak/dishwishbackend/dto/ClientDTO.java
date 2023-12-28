@@ -1,9 +1,6 @@
 package uit.ensak.dishwishbackend.dto;
 
 import lombok.*;
-import uit.ensak.dishwishbackend.model.Rating;
-
-import java.util.List;
 
 @Setter
 @Getter
@@ -20,9 +17,7 @@ public class ClientDTO {
 
     private String phoneNumber;
 
-    private List<DietDTO> dietsDTO;
+    private String allergies;
 
-    private List<AllergyDTO> allergiesDTO;
-
-    private List<Rating> ratings;
+    private DietDTO dietDTO;
 }

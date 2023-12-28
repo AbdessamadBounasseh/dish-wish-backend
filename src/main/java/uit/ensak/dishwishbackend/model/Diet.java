@@ -1,10 +1,10 @@
 package uit.ensak.dishwishbackend.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -18,8 +18,8 @@ public class Diet {
     private Long id;
 
     private String title;
-
-    @ManyToMany(mappedBy = "diets")
-    @JsonBackReference
-    private List<Client> clients;
+//
+//    @OneToMany(mappedBy = "diet")
+//    @JsonIgnoreProperties("diet")
+//    private List<Client> clients;
 }

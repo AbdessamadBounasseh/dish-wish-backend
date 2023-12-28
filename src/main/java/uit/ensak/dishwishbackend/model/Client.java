@@ -41,6 +41,12 @@ public class Client implements UserDetails {
 
     private String phoneNumber;
 
+    private String allergies;
+
+    @ManyToOne
+    @JoinColumn(name = "diet_id")
+    private Diet diet;
+
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<Rating> ratings;
 
@@ -67,24 +73,6 @@ public class Client implements UserDetails {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Command> commands;
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "client_diet",
-            joinColumns = { @JoinColumn(name = "client_id") },
-            inverseJoinColumns = { @JoinColumn(name = "diet_id") }
-    )
-    //@JsonManagedReference
-    private List<Diet> diets;
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "client_allergy",
-            joinColumns = { @JoinColumn(name = "client_id") },
-            inverseJoinColumns = { @JoinColumn(name = "allergy_id") }
-    )
-    //@JsonManagedReference
-    private List<Allergy> allergies;
 
 //    @ElementCollection(targetClass = Role.class)
 //    @CollectionTable(name = "client_roles", joinColumns = @JoinColumn(name = "client_id"))
