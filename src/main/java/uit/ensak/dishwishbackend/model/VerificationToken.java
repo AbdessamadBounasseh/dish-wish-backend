@@ -34,28 +34,28 @@ public class VerificationToken {
 
     private static final int EXPIRATION_TIME = 10;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id")
-    private Client client;
-
     @CreationTimestamp(source = SourceType.DB)
     private Instant createdOn;
 
     @UpdateTimestamp(source = SourceType.DB)
     private Instant lastUpdatedOn;
 
-    public VerificationToken(String token) {
-        super();
-        this.token = token;
-        this.code = code;
-        this.expirationTime = getTokenExpirationTime();
-    }
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
 
     public VerificationToken(Client client, String token, String code) {
         super();
         this.token = token;
         this.code = code;
         this.client = client;
+        this.expirationTime = getTokenExpirationTime();
+    }
+
+    public VerificationToken(String token) {
+        super();
+        this.token = token;
+        this.code = code;
         this.expirationTime = getTokenExpirationTime();
     }
 
