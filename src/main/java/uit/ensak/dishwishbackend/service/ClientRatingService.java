@@ -31,8 +31,7 @@ public class ClientRatingService implements IClientRatingService{
     public List<Rating> getClientRatings(Long clientId) throws ClientNotFoundException {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ClientNotFoundException("User by Id " + clientId + " could not be found."));
-
-        return ratingRepository.findByClientAndType(client, "CLIENT_TYPE");
+        return ratingRepository.findByClientAndType(client, "CLIENT_RATING");
     }
 
     @Override

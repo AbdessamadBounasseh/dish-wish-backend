@@ -33,19 +33,18 @@ public class SecurityConfig {
         log.info("Request arrived ! Crossing securityFilterChain...");
         http
                 .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(ar -> ar.requestMatchers("/auth/**").permitAll())
+                .authorizeHttpRequests(ar -> ar.requestMatchers("/auth/**").permitAll())
 //                .authorizeHttpRequests(ar -> ar.requestMatchers("/chef/**").hasAnyAuthority("CHEF"))
-//                .authorizeHttpRequests(ar -> ar.anyRequest().authenticated())
-                .authorizeHttpRequests(ar -> ar.anyRequest().permitAll());
-//                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//                .authenticationProvider(authenticationProvider)
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-//                .logout(logout -> logout
-//                        .logoutUrl("/auth/logout")
-//                        .addLogoutHandler(logoutHandler)
-//                        .logoutSuccessHandler((request, response, authentication)
-//                                        -> SecurityContextHolder.clearContext())
-//                );
+                .authorizeHttpRequests(ar -> ar.anyRequest().authenticated())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler((request, response, authentication)
+                                        -> SecurityContextHolder.clearContext())
+                );
 
         log.info("SecurityFilterChain crossed successfully.");
         return http.build();

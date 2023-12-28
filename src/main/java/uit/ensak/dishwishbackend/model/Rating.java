@@ -39,22 +39,4 @@ public abstract class Rating {
 
     @Column(name = "type", insertable = false, updatable = false)
     private String type;
-
-
-//    @EmbeddedId
-//    private RatingId id;
-//    @ManyToOne
-//    @JoinColumn(name="star_id", nullable=false)
-//    @MapsId("starId")
-//    private Star star;
-
-//    @Embeddable
-//    public static class RatingId implements Serializable {
-//        private Long clientId;
-//        private Long chefId;
-//        private Long starId;
-//
-//        public RatingId() {
-//        }
-//    }
 }
