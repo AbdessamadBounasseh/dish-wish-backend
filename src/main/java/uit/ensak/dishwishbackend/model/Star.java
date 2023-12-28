@@ -16,6 +16,6 @@ public class Star {
 
     private String number;
 
-    @OneToMany(mappedBy = "star")
-    private List<Rating> ratings;
+//    @OneToMany(mappedBy = "star")
+//    private List<Rating> ratings;
 }

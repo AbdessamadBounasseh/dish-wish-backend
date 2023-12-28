@@ -1,5 +1,6 @@
 package uit.ensak.dishwishbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,35 +17,26 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Rating {
-    @EmbeddedId
-    private RatingId id;
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
+public abstract class Rating {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name="client_id", nullable=false)
-    @MapsId("clientId")
+    @JsonIgnore
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name="chef_id", nullable=false)
-    @MapsId("chefId")
+    @JsonIgnore
     private Chef chef;
 
-    @ManyToOne
-    @JoinColumn(name="star_id", nullable=false)
-    @MapsId("starId")
-    private Star star;
+    private double rating;
 
     @CreationTimestamp(source = SourceType.DB)
     private Instant createdOn;
 
-    @Embeddable
-    public static class RatingId implements Serializable {
-        private Long clientId;
-        private Long chefId;
-        private Long starId;
-
-        public RatingId() {
-        }
-    }
+    @Column(name = "type", insertable = false, updatable = false)
+    private String type;
 }
