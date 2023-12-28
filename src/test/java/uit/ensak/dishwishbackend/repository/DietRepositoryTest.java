@@ -14,7 +14,7 @@ public class DietRepositoryTest {
     private final DietRepository dietRepository;
 
     @Autowired
-    public DietRepositoryTest(DietRepository dietRepository) {
+    public DietRepositoryTest (DietRepository dietRepository) {
         this.dietRepository = dietRepository;
     }
 
@@ -24,7 +24,6 @@ public class DietRepositoryTest {
         dietRepository.save(diet);
 
         Diet returnDiet = dietRepository.findByTitle("Oeuf").orElseThrow();
-
         Assertions.assertNotNull(returnDiet);
         Assertions.assertEquals(diet.getId(),returnDiet.getId());
         Assertions.assertEquals(diet.getTitle(),returnDiet.getTitle());

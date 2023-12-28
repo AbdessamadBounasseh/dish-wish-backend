@@ -12,7 +12,10 @@ import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.exception.InvalidFileExtensionException;
 import uit.ensak.dishwishbackend.mapper.ChefMapper;
 import uit.ensak.dishwishbackend.mapper.ClientMapper;
-import uit.ensak.dishwishbackend.model.*;
+import uit.ensak.dishwishbackend.model.Chef;
+import uit.ensak.dishwishbackend.model.Client;
+import uit.ensak.dishwishbackend.model.Role;
+import uit.ensak.dishwishbackend.model.VerificationToken;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.TokenRepository;
 
@@ -24,8 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static uit.ensak.dishwishbackend.service.ChefService.verifyExtention;
 
 @Service
 @AllArgsConstructor
@@ -84,22 +85,9 @@ public class ClientService implements IClientService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-
-    public void deleteOldDietsAndAllergiesAssoc(Client client) {
-        for (Diet diet : client.getDiets()) {
-            diet.getClients().remove(client);
-        }
-        for (Allergy allergy : client.getAllergies()) {
-            allergy.getClients().remove(client);
-        }
-        client.getDiets().clear();
-        client.getAllergies().clear();
-    }
-
     public Client updateUser(Long id, ChefDTO updateUserDTO, MultipartFile photo) throws IOException, ClientNotFoundException {
         log.info("Updating user of id {} and {}", id, updateUserDTO);
         Client updateUser = this.getClientById(id);
-        this.deleteOldDietsAndAllergiesAssoc(updateUser);
         if (updateUser instanceof Chef) {
             updateUser = chefMapper.fromChefDtoToChef(updateUserDTO, (Chef) updateUser);
         } else {
@@ -152,51 +140,14 @@ public class ClientService implements IClientService {
         }
     }
 
-
-    @Transactional
-    public void switchRole(Long clientId) throws ClientNotFoundException {
-        Client client = getClientById(clientId);
-
-        if (client instanceof Chef) {
-            // If the client is a chef, switch to client
-            Client updatedClient = new Client();
-            copyFields(client, updatedClient);
-            //updatedClient.setId(clientId);
-            clientRepository.save(updatedClient);
-        } else if (client != null) {
-            // If the client is a regular client, switch to chef
-            Chef updatedChef = new Chef();
-            copyFields(client, updatedChef);
-            //updatedChef.setId(clientId);
-            clientRepository.save(updatedChef);
-        }
-
-        clientRepository.delete(client);
-    }
-
-    private void copyFields(Client source, Client target) {
-        // Copy common fields from source to target
-        target.setEmail(source.getEmail());
-        target.setPassword(source.getPassword());
-        target.setFirstName(source.getFirstName());
-        target.setLastName(source.getLastName());
-        target.setAddress(source.getAddress());
-        target.setPhoneNumber(source.getPhoneNumber());
-        target.setPhoto(source.getPhoto());
-
-        // Check if source is a Chef before copying Chef-specific fields
-        if (source instanceof Chef && target instanceof Chef) {
-            Chef sourceChef = (Chef) source;
-            Chef targetChef = (Chef) target;
-            targetChef.setBio(sourceChef.getBio());
-            targetChef.setIdCard(sourceChef.getIdCard());
-            targetChef.setCertificate(sourceChef.getCertificate());
-        }
-    }
-
-
     public boolean verifyImageExtension(MultipartFile image) {
-        return verifyExtention(image);
+        String originalImageName = image.getOriginalFilename();
+        String[] allowedExtensions = {"jpg", "jpeg", "png"};
+        String imageExtension = null;
+        if (originalImageName != null) {
+            imageExtension = originalImageName.substring(originalImageName.lastIndexOf('.') + 1);
+        }
+        return imageExtension != null && Arrays.asList(allowedExtensions).contains(imageExtension.toLowerCase());
     }
 
     public String saveImage(Long id, MultipartFile image, String basePath) throws IOException {

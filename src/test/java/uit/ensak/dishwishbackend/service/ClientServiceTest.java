@@ -15,7 +15,9 @@ import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.exception.InvalidFileExtensionException;
 import uit.ensak.dishwishbackend.mapper.ChefMapper;
 import uit.ensak.dishwishbackend.mapper.ClientMapper;
-import uit.ensak.dishwishbackend.model.*;
+import uit.ensak.dishwishbackend.model.Chef;
+import uit.ensak.dishwishbackend.model.Client;
+import uit.ensak.dishwishbackend.model.VerificationToken;
 import uit.ensak.dishwishbackend.repository.ClientRepository;
 import uit.ensak.dishwishbackend.repository.TokenRepository;
 
@@ -23,11 +25,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -226,12 +226,8 @@ class ClientServiceTest {
         ChefDTO updateUserDTO = new ChefDTO();
         updateUserDTO.setFirstName("nash");
         updateUserDTO.setLastName("Omega");
-        updateUserDTO.setDietsDTO(new ArrayList<>());
-        updateUserDTO.setAllergiesDTO(new ArrayList<>());
         Client updateUser = new Client();
         updateUser.setId(id);
-        updateUser.setDiets(new ArrayList<>());
-        updateUser.setAllergies(new ArrayList<>());
         Client updateUserConverted = Client.builder().id(1L).firstName("nash").lastName("omega").photo("").build();
 
         when(clientRepository.findById(any(Long.class))).thenReturn(Optional.of(updateUser));
@@ -254,11 +250,7 @@ class ClientServiceTest {
         updateUserDTO.setFirstName("nash");
         updateUserDTO.setLastName("Omega");
         updateUserDTO.setBio("i'm a cook");
-        updateUserDTO.setAllergiesDTO(new ArrayList<>());
-        updateUserDTO.setDietsDTO(new ArrayList<>());
         Chef updateUser = new Chef();
-        updateUser.setDiets(new ArrayList<>());
-        updateUser.setAllergies(new ArrayList<>());
         updateUser.setId(id);
         Chef updateUserConverted = new Chef();
         updateUserConverted.setId(1L);
@@ -282,14 +274,11 @@ class ClientServiceTest {
     public void ClientService_UpdateUser_ThrowsInvalidFileExtensionException() {
         Long id = 1L;
         ChefDTO updateUserDTO = new ChefDTO();
-        updateUserDTO.setAllergiesDTO(new ArrayList<>());
-        updateUserDTO.setDietsDTO(new ArrayList<>());
         MultipartFile image = new MockMultipartFile("test.gif",
                 "test.gif", "image/gif", "test".getBytes());
         Client updateUser = new Client();
-        updateUser.setDiets(new ArrayList<>());
-        updateUser.setAllergies(new ArrayList<>());
         updateUser.setId(id);
+
         Client updateUserConverted = Client.builder().id(1L).photo("").build();
 
         when(clientRepository.findById(any(Long.class))).thenReturn(Optional.of(updateUser));
@@ -310,34 +299,6 @@ class ClientServiceTest {
         when(clientRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
         assertThrows(ClientNotFoundException.class, () -> clientService.updateUser(id, updateUserDTO, image));
-    }
-
-    @Test
-    public void ClientService_deleteOldDietsAndAllergiesAssoc_ReturnVoid() {
-        Diet diet1 = Diet.builder().clients(new ArrayList<>()).build();
-        Diet diet2 = Diet.builder().clients(new ArrayList<>()).build();
-        Allergy allergy1 = Allergy.builder().clients(new ArrayList<>()).build();
-        Allergy allergy2 = Allergy.builder().clients(new ArrayList<>()).build();
-        Client client = Client.builder().diets(new ArrayList<>()).allergies(new ArrayList<>()).build();
-
-        diet1.getClients().add(client);
-        diet2.getClients().add(client);
-        allergy1.getClients().add(client);
-        allergy2.getClients().add(client);
-
-        client.getDiets().add(diet1);
-        client.getDiets().add(diet2);
-        client.getAllergies().add(allergy1);
-        client.getAllergies().add(allergy2);
-
-        clientService.deleteOldDietsAndAllergiesAssoc(client);
-
-        assertThat(diet1.getClients()).isEmpty();
-        assertThat(diet2.getClients()).isEmpty();
-        assertThat(allergy1.getClients()).isEmpty();
-        assertThat(allergy2.getClients()).isEmpty();
-        assertThat(client.getDiets()).isEmpty();
-        assertThat(client.getAllergies()).isEmpty();
     }
 
     @Test
