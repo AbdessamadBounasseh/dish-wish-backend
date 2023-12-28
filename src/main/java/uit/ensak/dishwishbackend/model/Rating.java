@@ -1,5 +1,6 @@
 package uit.ensak.dishwishbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,13 +25,11 @@ public abstract class Rating {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="client_id", nullable=false)
-    @MapsId("clientId")
+    @JsonIgnore
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name="chef_id", nullable=false)
-    @MapsId("chefId")
+    @JsonIgnore
     private Chef chef;
 
     private double rating;
