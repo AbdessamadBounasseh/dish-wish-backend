@@ -1,6 +1,7 @@
 package uit.ensak.dishwishbackend.dto;
 
 import lombok.*;
+import uit.ensak.dishwishbackend.model.Rating;
 
 import java.util.List;
 
@@ -22,4 +23,6 @@ public class ClientDTO {
     private List<DietDTO> dietsDTO;
 
     private List<AllergyDTO> allergiesDTO;
+
+    private List<Rating> ratings;
 }
