@@ -25,7 +25,7 @@ public class ClientRatingController {
         return ResponseEntity.ok(ratings);
     }
 
-    @PostMapping("")
+    @PostMapping("/rate")
     public ClientRating rateClient(@RequestBody RatingDTO ratingDetails) throws ClientNotFoundException {
         return clientRatingService.addRatingToClient(ratingDetails);
     }
