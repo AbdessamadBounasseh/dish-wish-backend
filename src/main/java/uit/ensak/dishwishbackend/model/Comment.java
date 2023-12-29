@@ -1,10 +1,7 @@
 package uit.ensak.dishwishbackend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 
@@ -15,6 +12,7 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,11 +24,11 @@ public class Comment {
     private Instant createdOn;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="sender_id", nullable=false)
     private Client sender;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="receiver_id", nullable=false)
     private Client receiver;
 }

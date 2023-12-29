@@ -9,15 +9,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import uit.ensak.dishwishbackend.dto.ChefDTO;
+import uit.ensak.dishwishbackend.dto.ChefDetailsDTO;
 import uit.ensak.dishwishbackend.exception.ClientNotFoundException;
 import uit.ensak.dishwishbackend.exception.InvalidFileExtensionException;
+import uit.ensak.dishwishbackend.mapper.ChefMapper;
 import uit.ensak.dishwishbackend.model.Chef;
+import uit.ensak.dishwishbackend.model.Comment;
 import uit.ensak.dishwishbackend.repository.ChefRepository;
+import uit.ensak.dishwishbackend.repository.CommentRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +34,10 @@ import static org.mockito.Mockito.*;
 public class ChefServiceTest {
     @Mock
     private ChefRepository chefRepository;
+    @Mock
+    private ChefMapper chefMapper;
+    @Mock
+    private CommentRepository commentRepository;
     @InjectMocks
     private ChefService chefService;
 
@@ -79,6 +90,60 @@ public class ChefServiceTest {
                 .when(chefRepository).save(chef2);
         assertThrows(DataIntegrityViolationException.class,
                 () -> chefService.saveChef(chef2));
+    }
+
+    @Test
+    public void ChefService_GetChefDetails_ReturnChefDetailsDTO() throws ClientNotFoundException {
+        Chef chef = mock(Chef.class);
+        Comment comment1 = mock(Comment.class);
+        Comment comment2 = mock(Comment.class);
+        List<Comment> comments = new ArrayList<>();
+        comments.add(comment1);
+        comments.add(comment2);
+
+        when(chefRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(chef));
+        when(commentRepository.findByReceiverId(any(Long.class))).thenReturn(comments);
+
+        ChefDetailsDTO returnChefDetailsDTO = chefService.getChefDetails(1L);
+
+        Assertions.assertNotNull(returnChefDetailsDTO);
+        Assertions.assertEquals(chef, returnChefDetailsDTO.getChef());
+        Assertions.assertEquals(2, returnChefDetailsDTO.getComments().size());
+    }
+    @Test
+    public void ChefService_GetChefDetails_ThrowsClientNotFoundException()  {
+
+        when(chefRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        assertThrows(ClientNotFoundException.class,
+                () -> chefService.getChefDetails(1L));
+    }
+
+    @Test
+    public void ChefService_FilterChefByName_ReturnListOfChefDTO(){
+        Chef chef1 = mock(Chef.class);
+        Chef chef2 = mock(Chef.class);
+        Chef chef3 = mock(Chef.class);
+        Chef chef4 = mock(Chef.class);
+        ChefDTO chefDTO1 = mock(ChefDTO.class);
+        ChefDTO chefDTO2 = mock(ChefDTO.class);
+        ChefDTO chefDTO3 = mock(ChefDTO.class);
+        ChefDTO chefDTO4 = mock(ChefDTO.class);
+        List<Chef> chefs1 = new ArrayList<>();
+        List<Chef> chefs2 = new ArrayList<>();
+        chefs1.add(chef1);
+        chefs1.add(chef2);
+        chefs2.add(chef3);
+        chefs2.add(chef4);
+
+        when(chefRepository.findByFirstNameContaining(anyString())).thenReturn(chefs1);
+        when(chefRepository.findByLastNameContaining(anyString())).thenReturn(chefs2);
+        when(chefMapper.fromChefToChefDto(any(Chef.class)))
+                .thenReturn(chefDTO1).thenReturn(chefDTO2).thenReturn(chefDTO3).thenReturn(chefDTO4);
+
+        List<ChefDTO> returnChefsDTO = chefService.filterChefByName("fay");
+
+        Assertions.assertEquals(4,returnChefsDTO.size());
     }
 
     @Test
