@@ -19,7 +19,7 @@ public class EmailVerificationService {
 
     public void sendVerificationEmail(Client client, String verificationToken) {
         String applicationUrl = this.applicationUrl(request);
-        publisher.publishEvent(new RegistrationCompleteEvent(client, applicationUrl, verificationToken));
+        publisher.publishEvent(new RegistrationCompleteEvent(client, verificationToken, applicationUrl));
     }
 
     public String applicationUrl(HttpServletRequest request) {
