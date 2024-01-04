@@ -120,30 +120,39 @@ public class ChefServiceTest {
     }
 
     @Test
-    public void ChefService_FilterChefByName_ReturnListOfChefDTO(){
+    public void ChefService_FilterChefByNameAndAddress_ReturnListOfChefDTO(){
         Chef chef1 = mock(Chef.class);
         Chef chef2 = mock(Chef.class);
         Chef chef3 = mock(Chef.class);
         Chef chef4 = mock(Chef.class);
+        Chef chef5 = mock(Chef.class);
+        Chef chef6 = mock(Chef.class);
         ChefDTO chefDTO1 = mock(ChefDTO.class);
         ChefDTO chefDTO2 = mock(ChefDTO.class);
         ChefDTO chefDTO3 = mock(ChefDTO.class);
         ChefDTO chefDTO4 = mock(ChefDTO.class);
+        ChefDTO chefDTO5 = mock(ChefDTO.class);
+        ChefDTO chefDTO6 = mock(ChefDTO.class);
         List<Chef> chefs1 = new ArrayList<>();
         List<Chef> chefs2 = new ArrayList<>();
+        List<Chef> chefs3 = new ArrayList<>();
         chefs1.add(chef1);
         chefs1.add(chef2);
         chefs2.add(chef3);
         chefs2.add(chef4);
+        chefs3.add(chef5);
+        chefs3.add(chef6);
 
         when(chefRepository.findByFirstNameContaining(anyString())).thenReturn(chefs1);
         when(chefRepository.findByLastNameContaining(anyString())).thenReturn(chefs2);
+        when(chefRepository.findByAddressContaining(anyString())).thenReturn(chefs3);
         when(chefMapper.fromChefToChefDto(any(Chef.class)))
-                .thenReturn(chefDTO1).thenReturn(chefDTO2).thenReturn(chefDTO3).thenReturn(chefDTO4);
+                .thenReturn(chefDTO1).thenReturn(chefDTO2).thenReturn(chefDTO3)
+                .thenReturn(chefDTO4).thenReturn(chefDTO5).thenReturn(chefDTO6);
 
-        List<ChefDTO> returnChefsDTO = chefService.filterChefByName("fay");
+        List<ChefDTO> returnChefsDTO = chefService.filterChefByNameAndAddress("fay");
 
-        Assertions.assertEquals(4,returnChefsDTO.size());
+        Assertions.assertEquals(6,returnChefsDTO.size());
     }
 
     @Test
