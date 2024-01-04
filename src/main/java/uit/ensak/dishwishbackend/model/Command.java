@@ -2,10 +2,7 @@ package uit.ensak.dishwishbackend.model;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -17,6 +14,7 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Command {
     @Id

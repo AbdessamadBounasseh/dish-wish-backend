@@ -33,7 +33,7 @@ public class ChefController {
     }
     @GetMapping("filter/name")
     public ResponseEntity<List<ChefDTO>> filterChefByName(@RequestBody String query){
-        List<ChefDTO> chefs = chefService.filterChefByName(query);
+        List<ChefDTO> chefs = chefService.filterChefByNameAndAddress(query);
         return new ResponseEntity<>(chefs, HttpStatus.OK);
     }
 }

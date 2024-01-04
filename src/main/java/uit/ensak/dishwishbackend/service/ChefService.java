@@ -58,12 +58,13 @@ public class ChefService {
         return this.saveImage(chef.getId(), idCard, basePath);
     }
 
-    public List<ChefDTO> filterChefByName(String query){
+    public List<ChefDTO> filterChefByNameAndAddress(String query){
         List <Chef> chefs = new ArrayList<>();
         String[] queryWords = query.split("\\s+");
         for (String word : queryWords){
             chefs.addAll(chefRepository.findByFirstNameContaining(word));
             chefs.addAll(chefRepository.findByLastNameContaining(word));
+            chefs.addAll(chefRepository.findByAddressContaining(word));
         }
         return chefs.stream()
                 .map(chefMapper::fromChefToChefDto)

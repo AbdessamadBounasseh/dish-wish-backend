@@ -58,4 +58,23 @@ public class ChefRepositoryTest {
         Assertions.assertNotNull(returnChefs);
         Assertions.assertEquals(2, returnChefs.size());
     }
+
+    @Test
+    public void ChefRepository_FindByAddressContaining_ReturnListOfChef(){
+        Chef chef1 = new Chef();
+        Chef chef2 = new Chef();
+        chef1.setId(1L);
+        chef2.setId(2L);
+        chef1.setAddress("Bir Rami Sud/ Kenitra/Maroc");
+        chef2.setAddress("Centre Ville/ Kenitra/Maroc");
+
+        chefRepository.save(chef1);
+        chefRepository.save(chef2);
+
+        List<Chef> returnChefs = chefRepository.findByAddressContaining("Keni");
+        System.out.println(returnChefs);
+
+        Assertions.assertNotNull(returnChefs);
+        Assertions.assertEquals(2, returnChefs.size());
+    }
 }
